@@ -52,4 +52,11 @@ public class ContextHelp extends AbstractComponent {
 		return "help_" + helpComponentIdCounter++;
 	}
 
+	public void showHelpFor(Component component) {
+		if (component.getDebugId() != null
+				&& helpHTML.containsKey(component.getDebugId())) {
+			selectedComponentId = component.getDebugId();
+			requestRepaint();
+		}
+	}
 }
