@@ -15,7 +15,8 @@ import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ui.VOverlay;
 
-public class VContextHelp extends VOverlay implements Paintable {
+public class VContextHelp extends VOverlay implements Paintable,
+		NativePreviewHandler {
 
 	/** Set the tagname used to statically resolve widget from UIDL. */
 	public static final String TAGNAME = "helprouter";
@@ -44,40 +45,11 @@ public class VContextHelp extends VOverlay implements Paintable {
 		setStylePrimaryName(CLASSNAME);
 		setZIndex(Z_INDEX_BASE);
 
-		Event.addNativePreviewHandler(new NativePreviewHandler() {
-
-			public void onPreviewNativeEvent(NativePreviewEvent event) {
-				if (followFocus) {
-					if (event.getTypeInt() == Event.ONMOUSEUP
-							|| event.getTypeInt() == Event.ONKEYUP
-							&& event.getNativeEvent().getKeyCode() == KeyCodes.KEY_TAB) {
-						updateFocusedElement();
-					}
-				} else {
-					// Grab the F1 key (keyCode == 112)
-					if (event.getTypeInt() == Event.ONKEYDOWN
-							&& event.getNativeEvent().getKeyCode() == 112) {
-						updateFocusedElement();
-						event.cancel();
-					} else if (event.getTypeInt() == Event.ONKEYDOWN
-							|| event.getTypeInt() == Event.ONCLICK) {
-						// Hide the help div on keyups and mouse clicks
-						hide();
-					}
-				}
-			}
-		});
+		Event.addNativePreviewHandler(this);
 		suppressHelpForIE();
 
 		hide();
 	}
-
-	public native void suppressHelpForIE()
-	/*-{
-		$doc.onhelp = function() {
-			return false;
-		}
-	}-*/;
 
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
 		// This call should be made first. Ensure correct implementation,
@@ -100,46 +72,119 @@ public class VContextHelp extends VOverlay implements Paintable {
 			selectedComponentIdVariable = "selectedComponentId";
 		}
 
-		String helpText = uidl.getStringAttribute("helpText");
 		followFocus = uidl.getBooleanAttribute("followFocus");
 
+		String helpText = uidl.getStringAttribute("helpText");
 		if (helpText != null) {
-			HTML helpHtml = new HTML(helpText);
-			helpHtml.setStyleName("helpText");
-			setWidget(helpHtml);
-			Element helpElement = DOM.getElementById(uidl
-					.getStringVariable(selectedComponentIdVariable));
-			// check whether helpElement has a child element with
-			// class="v-XXXX-content"
-			// and if this is the case, use the content element for the position
-			// calculations
-			// below.
-			NodeList<Node> children = helpElement.getChildNodes();
-			for (int i = 0; i < children.getLength(); i++) {
-				if (children.getItem(i).getNodeType() == Node.ELEMENT_NODE) {
-					Element e = Element.as(children.getItem(i));
-					if (e.getClassName().contains("content")) {
-						helpElement = e;
-						break;
-					}
-				}
-			}
-			show();
-			Element e = getElement();
-			e.getStyle().setProperty("position", "absolute");
-			int left = helpElement.getAbsoluteLeft()
-					+ helpElement.getOffsetWidth();
-			if (left + e.getOffsetWidth() > Document.get().getClientWidth()) {
-				left -= helpElement.getOffsetWidth() / 2;
-			}
-			int top = helpElement.getAbsoluteTop()
-					+ helpElement.getOffsetHeight() / 2 - e.getOffsetHeight()
-					/ 2;
-			e.getStyle().setPropertyPx("left", left);
-			e.getStyle().setPropertyPx("top", top);
+			showHelpBubble(uidl, helpText);
 		} else {
 			hide();
 		}
+	}
+
+	public void onPreviewNativeEvent(NativePreviewEvent event) {
+		if (followFocus && getElement() != null) {
+			if (isFocusMovingEvent(event)) {
+				updateFocusedElement();
+			}
+		} else {
+			if (isF1Pressed(event)) {
+				updateFocusedElement();
+				event.cancel();
+			} else if (isKeyDownOrClick(event)) {
+				hide();
+			}
+		}
+	}
+
+	private boolean isFocusMovingEvent(NativePreviewEvent event) {
+		return event.getTypeInt() == Event.ONMOUSEUP
+				|| event.getTypeInt() == Event.ONKEYUP
+				&& event.getNativeEvent().getKeyCode() == KeyCodes.KEY_TAB;
+	}
+
+	private boolean isF1Pressed(NativePreviewEvent event) {
+		return event.getTypeInt() == Event.ONKEYDOWN
+		&& event.getNativeEvent().getKeyCode() == 112;
+	}
+	
+	private boolean isKeyDownOrClick(NativePreviewEvent event) {
+		return event.getTypeInt() == Event.ONKEYDOWN
+		|| event.getTypeInt() == Event.ONCLICK;
+	}
+
+	public native void suppressHelpForIE()
+	/*-{
+		$doc.onhelp = function() {
+			return false;
+		}
+	}-*/;
+
+
+	private void showHelpBubble(UIDL uidl, String helpText) {
+		setHelpText(helpText);
+		Element helpElement = findHelpElement(uidl);
+		show();
+		setHelpBubblePosition(helpElement);
+	}
+
+	private void setHelpBubblePosition(Element helpElement) {
+		Element e = getElement();
+		e.getStyle().setProperty("position", "absolute");
+		e.getStyle().setPropertyPx("left",
+				calculateLeftPosition(helpElement, e));
+		e.getStyle().setPropertyPx("top", calculateTopPosition(helpElement, e));
+	}
+
+	private int calculateTopPosition(Element helpElement, Element e) {
+		return helpElement.getAbsoluteTop() + helpElement.getOffsetHeight() / 2
+				- e.getOffsetHeight() / 2;
+	}
+
+	private int calculateLeftPosition(Element helpElement, Element e) {
+		int left = helpElement.getAbsoluteLeft() + helpElement.getOffsetWidth();
+		left = makeFitInBrowserWindow(left, helpElement, e);
+		return left;
+	}
+
+	private int makeFitInBrowserWindow(int left, Element helpElement, Element e) {
+		int newPosition = left;
+		if (newPosition + e.getOffsetWidth() > Document.get().getClientWidth()) {
+			newPosition -= helpElement.getOffsetWidth() / 2;
+		}
+		return newPosition;
+	}
+
+	private Element findHelpElement(UIDL uidl) {
+		Element helpElement = DOM.getElementById(uidl
+				.getStringVariable(selectedComponentIdVariable));
+		Element contentElement = findContentElement(helpElement);
+		if (contentElement != null) {
+			return contentElement;
+		}
+		return helpElement;
+	}
+
+	private Element findContentElement(Element helpElement) {
+		// check whether helpElement has a child element with
+		// class="v-XXXX-content" and if this is the case, use the content
+		// element for the position calculations below.
+		NodeList<Node> children = helpElement.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++) {
+			if (children.getItem(i).getNodeType() == Node.ELEMENT_NODE) {
+				Element e = Element.as(children.getItem(i));
+				if (e.getClassName().contains("content")) {
+					return e;
+				}
+			}
+		}
+		return null;
+	}
+
+	private void setHelpText(String helpText) {
+		HTML helpHtml = new HTML(helpText);
+		helpHtml.setStyleName("helpText");
+		setWidget(helpHtml);
 	}
 
 	public static native Element getFocusedElement()
@@ -149,10 +194,15 @@ public class VContextHelp extends VOverlay implements Paintable {
 
 	private Element getHelpElement() {
 		Element focused = getFocusedElement();
-		while ("".equals(focused.getId())) {
-			focused = focused.getParentElement();
+		return findFirstElementInHierarchyWithId(focused);
+	}
+
+	private static Element findFirstElementInHierarchyWithId(Element focused) {
+		Element elementWithId = focused;
+		while ("".equals(elementWithId.getId())) {
+			elementWithId = elementWithId.getParentElement();
 		}
-		return focused;
+		return elementWithId;
 	}
 
 	private void updateFocusedElement() {
