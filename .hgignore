@@ -1,0 +1,4 @@
+
+syntax: regexp
+^WebContent/VAADIN$
+^build$
