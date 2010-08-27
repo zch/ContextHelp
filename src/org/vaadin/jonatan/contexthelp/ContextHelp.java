@@ -99,6 +99,8 @@ public class ContextHelp extends AbstractComponent {
 	 */
 	public void setFollowFocus(boolean followFocus) {
 		this.followFocus = followFocus;
+		this.selectedComponentId = "";
+		requestRepaint();
 	}
 
 	/**

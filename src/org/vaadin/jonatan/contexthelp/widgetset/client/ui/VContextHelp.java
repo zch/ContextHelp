@@ -34,7 +34,9 @@ public class VContextHelp extends VOverlay implements Paintable,
 
 	private String selectedComponentIdVariable;
 
-	private boolean followFocus = false;
+	private boolean followFocus = true;
+	
+	private HTML helpHtml = new HTML();
 
 	/**
 	 * The constructor should first call super() to initialize the component and
@@ -45,6 +47,8 @@ public class VContextHelp extends VOverlay implements Paintable,
 		setStylePrimaryName(CLASSNAME);
 		setZIndex(Z_INDEX_BASE);
 
+		setWidget(helpHtml);
+		
 		Event.addNativePreviewHandler(this);
 		suppressHelpForIE();
 
@@ -77,7 +81,7 @@ public class VContextHelp extends VOverlay implements Paintable,
 		String helpText = uidl.getStringAttribute("helpText");
 		if (helpText != null) {
 			showHelpBubble(uidl, helpText);
-		} else {
+		} else if (isShowing()) {
 			hide();
 		}
 	}
@@ -91,7 +95,7 @@ public class VContextHelp extends VOverlay implements Paintable,
 			if (isF1Pressed(event)) {
 				updateFocusedElement();
 				event.cancel();
-			} else if (isKeyDownOrClick(event)) {
+			} else if (isKeyDownOrClick(event) && isShowing()) {
 				hide();
 			}
 		}
@@ -99,8 +103,8 @@ public class VContextHelp extends VOverlay implements Paintable,
 
 	private boolean isFocusMovingEvent(NativePreviewEvent event) {
 		return event.getTypeInt() == Event.ONMOUSEUP
-				|| event.getTypeInt() == Event.ONKEYUP
-				&& event.getNativeEvent().getKeyCode() == KeyCodes.KEY_TAB;
+				|| (event.getTypeInt() == Event.ONKEYUP
+				&& event.getNativeEvent().getKeyCode() == KeyCodes.KEY_TAB);
 	}
 
 	private boolean isF1Pressed(NativePreviewEvent event) {
@@ -123,33 +127,25 @@ public class VContextHelp extends VOverlay implements Paintable,
 
 	private void showHelpBubble(UIDL uidl, String helpText) {
 		setHelpText(helpText);
-		Element helpElement = findHelpElement(uidl);
 		show();
-		setHelpBubblePosition(helpElement);
+		Element helpElement = findHelpElement(uidl);
+		setPopupPosition(calculateLeftPosition(helpElement), calculateTopPosition(helpElement));
 	}
 
-	private void setHelpBubblePosition(Element helpElement) {
-		Element e = getElement();
-		e.getStyle().setProperty("position", "absolute");
-		e.getStyle().setPropertyPx("left",
-				calculateLeftPosition(helpElement, e));
-		e.getStyle().setPropertyPx("top", calculateTopPosition(helpElement, e));
-	}
-
-	private int calculateTopPosition(Element helpElement, Element e) {
+	private int calculateTopPosition(Element helpElement) {
 		return helpElement.getAbsoluteTop() + helpElement.getOffsetHeight() / 2
-				- e.getOffsetHeight() / 2;
+				- getOffsetHeight() / 2;
 	}
 
-	private int calculateLeftPosition(Element helpElement, Element e) {
+	private int calculateLeftPosition(Element helpElement) {
 		int left = helpElement.getAbsoluteLeft() + helpElement.getOffsetWidth();
-		left = makeFitInBrowserWindow(left, helpElement, e);
+		left = makeFitInBrowserWindow(left, helpElement);
 		return left;
 	}
 
-	private int makeFitInBrowserWindow(int left, Element helpElement, Element e) {
+	private int makeFitInBrowserWindow(int left, Element helpElement) {
 		int newPosition = left;
-		if (newPosition + e.getOffsetWidth() > Document.get().getClientWidth()) {
+		if (newPosition + getOffsetWidth() > Document.get().getClientWidth()) {
 			newPosition -= helpElement.getOffsetWidth() / 2;
 		}
 		return newPosition;
@@ -182,9 +178,8 @@ public class VContextHelp extends VOverlay implements Paintable,
 	}
 
 	private void setHelpText(String helpText) {
-		HTML helpHtml = new HTML(helpText);
+		helpHtml.setHTML(helpText);
 		helpHtml.setStyleName("helpText");
-		setWidget(helpHtml);
 	}
 
 	public static native Element getFocusedElement()
