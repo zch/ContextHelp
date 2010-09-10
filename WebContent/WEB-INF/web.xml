@@ -15,13 +15,13 @@
   		<description>
   		Vaadin application class to start</description>
   		<param-name>application</param-name>
-  		<param-value>com.vaadin.incubator.contexthelp.ContextHelpApplication</param-value>
+  		<param-value>org.vaadin.jonatan.contexthelp.demo.ContextHelpApplication</param-value>
   	</init-param>
   	<init-param>
   		<description>
   		Application widgetset</description>
   		<param-name>widgetset</param-name>
-  		<param-value>com.vaadin.incubator.contexthelp.widgetset.ContexthelpApplicationWidgetset</param-value>
+  		<param-value>org.vaadin.jonatan.contexthelp.widgetset.ContexthelpWidgetset</param-value>
   	</init-param>
   </servlet>
   <servlet-mapping>

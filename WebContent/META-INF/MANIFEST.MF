@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Vaadin-License-Title: Apache License 2.0
+Implementation-Vendor: Oy IT Mill Ltd
+Implementation-Title: ContextHelp
+Implementation-Version: 0.0.3
+Vaadin-Package-Version: 1
+Vaadin-Widgetsets: org.vaadin.jonatan.contexthelp.ContexthelpApplicati
+ onWidgetset
+Class-Path: 
+

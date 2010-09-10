@@ -1,7 +1,10 @@
-package com.vaadin.incubator.contexthelp.widgetset.client.ui;
+package org.vaadin.jonatan.contexthelp.widgetset.client.ui;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -30,25 +33,37 @@ public class VContextHelp extends VOverlay implements Paintable {
 
 	private String selectedComponentIdVariable;
 
+	private boolean followFocus = false;
+
 	/**
 	 * The constructor should first call super() to initialize the component and
 	 * then handle any initialization relevant to Vaadin.
 	 */
 	public VContextHelp() {
 		super();
-        setStylePrimaryName(CLASSNAME);
-        setZIndex(Z_INDEX_BASE);
+		setStylePrimaryName(CLASSNAME);
+		setZIndex(Z_INDEX_BASE);
 
-		// Grab the F1 key (keyCode == 112)
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
-			
+
 			public void onPreviewNativeEvent(NativePreviewEvent event) {
-				if (event.getTypeInt() == Event.ONKEYDOWN && event.getNativeEvent().getKeyCode() == 112) {
-					updateFocusedElement();
-					event.cancel();
-				} else if (event.getTypeInt() == Event.ONKEYDOWN || event.getTypeInt() == Event.ONCLICK) {
-					// Hide the help div on keyups and mouse clicks
-					hide();
+				if (followFocus) {
+					if (event.getTypeInt() == Event.ONMOUSEUP
+							|| event.getTypeInt() == Event.ONKEYUP
+							&& event.getNativeEvent().getKeyCode() == KeyCodes.KEY_TAB) {
+						updateFocusedElement();
+					}
+				} else {
+					// Grab the F1 key (keyCode == 112)
+					if (event.getTypeInt() == Event.ONKEYDOWN
+							&& event.getNativeEvent().getKeyCode() == 112) {
+						updateFocusedElement();
+						event.cancel();
+					} else if (event.getTypeInt() == Event.ONKEYDOWN
+							|| event.getTypeInt() == Event.ONCLICK) {
+						// Hide the help div on keyups and mouse clicks
+						hide();
+					}
 				}
 			}
 		});
@@ -56,7 +71,7 @@ public class VContextHelp extends VOverlay implements Paintable {
 
 		hide();
 	}
-	
+
 	public native void suppressHelpForIE()
 	/*-{
 		$doc.onhelp = function() {
@@ -84,23 +99,46 @@ public class VContextHelp extends VOverlay implements Paintable {
 		} else {
 			selectedComponentIdVariable = "selectedComponentId";
 		}
-		
+
 		String helpText = uidl.getStringAttribute("helpText");
+		followFocus = uidl.getBooleanAttribute("followFocus");
 
 		if (helpText != null) {
 			HTML helpHtml = new HTML(helpText);
 			helpHtml.setStyleName("helpText");
 			setWidget(helpHtml);
-			Element focused = getHelpElement();
+			Element helpElement = DOM.getElementById(uidl
+					.getStringVariable(selectedComponentIdVariable));
+			// check whether helpElement has a child element with
+			// class="v-XXXX-content"
+			// and if this is the case, use the content element for the position
+			// calculations
+			// below.
+			NodeList<Node> children = helpElement.getChildNodes();
+			for (int i = 0; i < children.getLength(); i++) {
+				if (children.getItem(i).getNodeType() == Node.ELEMENT_NODE) {
+					Element e = Element.as(children.getItem(i));
+					if (e.getClassName().contains("content")) {
+						helpElement = e;
+						break;
+					}
+				}
+			}
 			show();
 			Element e = getElement();
 			e.getStyle().setProperty("position", "absolute");
-			int left = focused.getAbsoluteLeft() + focused.getOffsetWidth();
+			int left = helpElement.getAbsoluteLeft()
+					+ helpElement.getOffsetWidth();
 			if (left + e.getOffsetWidth() > Document.get().getClientWidth()) {
-				left -= focused.getOffsetWidth()/2;
+				left -= helpElement.getOffsetWidth() / 2;
 			}
+			int top = helpElement.getAbsoluteTop()
+					+ helpElement.getOffsetHeight() / 2 - e.getOffsetHeight()
+					/ 2;
 			e.getStyle().setPropertyPx("left", left);
-			e.getStyle().setPropertyPx("top", focused.getAbsoluteTop() + focused.getOffsetHeight()/2 - e.getOffsetHeight()/2);
+			e.getStyle().setPropertyPx("top", top);
+		} else {
+			hide();
 		}
 	}
 
@@ -116,9 +154,10 @@ public class VContextHelp extends VOverlay implements Paintable {
 		}
 		return focused;
 	}
-	
+
 	private void updateFocusedElement() {
-		client.updateVariable(uidlId, selectedComponentIdVariable, getHelpElement().getId(), true);
+		client.updateVariable(uidlId, selectedComponentIdVariable,
+				getHelpElement().getId(), true);
 	}
 
 }
