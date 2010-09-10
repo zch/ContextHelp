@@ -1,4 +1,6 @@
-package org.vaadin.jonatan.contexthelp;
+package org.vaadin.jonatan.contexthelp.demo;
+
+import org.vaadin.jonatan.contexthelp.ContextHelp;
 
 import com.vaadin.Application;
 import com.vaadin.ui.Button;
