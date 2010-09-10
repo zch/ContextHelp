@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ContextHelp" basedir="../" default="all">
+
+    <!-- Main target that does all -->
+    <target name="all" depends="compile, widgetset, package-jar"/>
+
+    <!-- Non-project specific settings. -->
+	<property file="build/build.properties" />
+	<property name="configure.libs" value="" />
+
+    <!-- ================================================================== -->
+    <!-- Initialization                                                     -->
+    <!-- ================================================================== -->
+
+    <!-- Clean old compilation results. -->
+	<target name="clean-all">
+		<delete dir="${result-path}" includes="**/*" followsymlinks="false" includeemptydirs="true" defaultexcludes="false" failonerror="false"/>
+	</target>
+
+    <!-- Checks that all the required libraries exist. -->
+	<target name="check-libs">
+		<available file="${gwt.lib.dir}/gwt-user.jar" property="gwt-user.present" />
+		<available file="${gwt.lib.dir}/gwt-dev.jar" property="gwt-dev.present" />
+
+		<fail message="${gwt.lib.dir}/gwt-user.jar missing" unless="gwt-user.present" />
+		<fail message="${gwt.lib.dir}/gwt-dev.jar missing" unless="gwt-dev.present" />
+	</target>
+
+    <!-- Initialization -->
+	<target name="init">
+		<echo>Requirements for classpath:</echo>
+		<echo> ${gwt.lib.dir}/gwt-user.jar</echo>
+		<echo> ${gwt.lib.dir}/gwt-dev.jar</echo>
+
+		<antcall target="check-libs"/>
+	</target>
+
+    <!-- ================================================================== -->
+    <!-- Source Preprocessing                                               -->
+    <!-- ================================================================== -->
+
+    <target name="preprocess-src" depends="init">
+        <mkdir dir="${result-path}/src" />
+
+    	<patternset id="preprocessable-files">
+    		<include name="**/*.java" />
+    		<include name="**/*.html" />
+    		<include name="**/*.css" />
+    		<include name="**/*.xml" />
+		</patternset>
+
+    	<patternset id="non-preprocessable-files">
+    		<include name="**/*.png" />
+		</patternset>
+
+        <echo>Replacing @VERSION@ tag with build version for java/html/css/xml files.</echo>
+        <copy todir="${result-path}/src" overwrite="yes">
+            <filterset id="versionfilter">
+                <filter token="VERSION" value="${version}" />
+            </filterset>
+
+            <fileset dir="src">
+                <patternset refid="preprocessable-files" />
+            </fileset>
+        </copy>
+
+        <!-- Copy any non-filtered files as well -->
+        <copy todir="${result-path}/src" overwrite="yes">
+            <fileset dir="src">
+                <patternset refid="non-preprocessable-files" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Compilation                                                        -->
+    <!-- ================================================================== -->
+
+    <!-- Compile server-side Java -->
+	<target name="compile" depends="init, preprocess-src" unless="run.no-compile">
+        <property name="result.classes" value="${result-path}/war/WEB-INF/classes"/>
+
+        <mkdir dir="${result.classes}"/>
+        
+		 <javac destdir="${result.classes}" target="1.5" source="1.5"> 
+		 <!-- <javac destdir="${result.classes}" target="1.5" source="1.5" debug="true"> -->
+			<src path="${result-path}/src" />
+			<src path="${demo.src.base}" />
+			<include name="**/*.*" />
+
+			<classpath>
+				<path path="${result-path}/src" />
+				<path path="WebContent/WEB-INF/classes" />
+				<fileset dir="WebContent/WEB-INF/lib">
+					<include name="**/*.jar" />
+				</fileset>
+				<path path="${gwt.lib.dir}/gwt-user.jar" />
+				<path path="${gwt.lib.dir}/gwt-dev.jar" />
+			</classpath>
+		</javac>
+
+	</target>
+
+    <!-- Check if there are new modifications to widgetset sources -->
+	<target name="check-widgetset-uptodate">
+		<echo>Checking if widgetset needs to be rebuilt</echo>
+		<uptodate targetfile="WebContent/VAADIN/widgetsets/.widgetset" property="widgetset.uptodate">
+			<srcfiles dir="src" includes="**/gwt/**/*" />
+		</uptodate>
+	</target>
+
+    <!-- Refresh the project in a locally running Eclipse. -->
+	<target name="refresh-eclipse" if="eclipse.running">
+		<echo>Refreshing project folder</echo>
+		<eclipse.refreshLocal resource="ContextHelp" depth="infinite" />
+	</target>
+
+    <!-- Compile client-side Java -->
+	<target name="widgetset" depends="init,check-widgetset-uptodate" unless="widgetset.uptodate">
+		<echo>Compiling widgetset</echo>
+
+		<java classname="com.vaadin.tools.WidgetsetCompiler" failonerror="yes" fork="yes" maxmemory="512m">
+			<arg value="-out" />
+			<arg value="WebContent/VAADIN/widgetsets" />
+			<arg value="${addon.widgetset}" />
+			<jvmarg value="-Xss1024k" />
+			<jvmarg value="-Xmx1024M" />
+			<jvmarg value="-Djava.awt.headless=true" />
+			<classpath>
+				<path path="${result-path}/src" />
+				<path path="${basedir}/${result-path}/war/WEB-INF/classes" />
+				<path path="WebContent/WEB-INF/classes" />			
+				<fileset dir="${gwt.lib.dir}">
+					<include name="**/gwt-*.jar" />
+				</fileset>
+				<fileset dir="WebContent/WEB-INF/lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</java>
+
+		<touch file="WebContent/VAADIN/widgetsets/.widgetset" verbose="true" />
+
+		<antcall target="refresh-eclipse" />
+	</target>
+
+    <!-- ================================================================== -->
+    <!-- Packaging                                                          -->
+    <!-- ================================================================== -->
+
+    <!-- Create the JAR package. -->
+    <target name="package-jar" depends="compile" unless="run.no-package-jar">
+        <property name="jar.name" value="${addon.name}-${version}.jar"/>
+        <property name="jar.path" value="${result-path}/${jar.name}"/>
+
+        <jar jarfile="${jar.path}" compress="true">
+            <manifest>
+                <attribute name="Vaadin-Package-Version" value="1" />
+                <attribute name="Vaadin-Widgetsets" value="${addon.widgetset}" />
+                <attribute name="Implementation-Title" value="${addon.title}" />
+                <attribute name="Implementation-Version" value="${version}" />
+                <attribute name="Implementation-Vendor" value="${addon.vendor}" />
+            </manifest>
+        	
+        	<!-- The built server-side classes and the widget set class are here. -->
+            <fileset dir="${result.classes}">
+                <patternset>
+                    <include name="${src.package.dir}/**/*" />
+                	<exclude name="**/demo/**" />
+                </patternset>
+            </fileset> 
+
+        	<!-- Especially all the widget set source files are required. -->
+        	<fileset dir="${result-path}/src">
+                <patternset>
+                	<include name="${src.package.dir}/**/*" />
+                	<exclude name="**/demo/**" />
+                </patternset>
+            </fileset>
+        	
+        </jar>
+		<antcall target="refresh-eclipse" />
+	</target>		
+	
+</project>

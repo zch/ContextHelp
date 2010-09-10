@@ -1,8 +1,9 @@
-
-syntax: regexp
-^WebContent/VAADIN$
-^build$
-^\.settings$
-^\.classpath$
-^\.project$
-^\.DS_Store$
+syntax:glob
+WebContent/VAADIN/widgetsets/*
+build/classes/*
+build/result/*
+build/lib/gwt*
+.DS_Store
+.classpath
+.project
+.settings/*
