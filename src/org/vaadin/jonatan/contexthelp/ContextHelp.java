@@ -92,6 +92,7 @@ public class ContextHelp extends AbstractComponent {
 		if (component.getDebugId() != null
 				&& helpHTML.containsKey(component.getDebugId())) {
 			selectedComponentId = component.getDebugId();
+			hidden = false;
 			requestRepaint();
 		}
 	}
