@@ -15,7 +15,7 @@ import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ui.VOverlay;
 
-public class VContextHelp extends VOverlay implements Paintable,
+public class VContextHelp extends HTML implements Paintable,
 		NativePreviewHandler {
 
 	/** Set the tagname used to statically resolve widget from UIDL. */
@@ -24,8 +24,6 @@ public class VContextHelp extends VOverlay implements Paintable,
 	/** Set the CSS class name to allow styling. */
 	public static final String CLASSNAME = "v-" + TAGNAME;
 
-	private static final int Z_INDEX_BASE = 90000;
-
 	/** Component identifier in UIDL communications. */
 	String uidlId;
 
@@ -33,10 +31,10 @@ public class VContextHelp extends VOverlay implements Paintable,
 	ApplicationConnection client;
 
 	private boolean followFocus = true;
-
+	
 	private boolean hidden = true;
-
-	private HTML helpHtml = new HTML();
+	
+	private final HelpBubble bubble;
 
 	/**
 	 * The constructor should first call super() to initialize the component and
@@ -45,15 +43,11 @@ public class VContextHelp extends VOverlay implements Paintable,
 	public VContextHelp() {
 		super();
 		setStylePrimaryName(CLASSNAME);
-		setZIndex(Z_INDEX_BASE);
-
-		setWidget(helpHtml);
 
 		Event.addNativePreviewHandler(this);
 		suppressHelpForIE();
 
-		// Make sure our bubble is hidden
-		hide();
+		bubble = new HelpBubble();
 	}
 
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
@@ -75,10 +69,12 @@ public class VContextHelp extends VOverlay implements Paintable,
 
 		String helpText = uidl.getStringAttribute("helpText");
 		if (!hidden && helpText != null) {
-			showHelpBubble(uidl, helpText);
+			bubble.showHelpBubble(uidl, helpText);
 		} else {
 			hidden = true;
-			hide();
+			if (bubble.isShowing()) {
+				bubble.hide();
+			}
 			updateServersideState(false);
 		}
 	}
@@ -92,7 +88,7 @@ public class VContextHelp extends VOverlay implements Paintable,
 			if (isF1Pressed(event)) {
 				openBubble();
 				event.cancel();
-			} else if (isKeyDownOrClick(event) && isShowing()) {
+			} else if (isKeyDownOrClick(event) && bubble.isShowing()) {
 				closeBubble();
 			}
 		}
@@ -105,7 +101,7 @@ public class VContextHelp extends VOverlay implements Paintable,
 	
 	private void closeBubble() {
 		hidden = true;
-		hide();
+		bubble.hide();
 		updateServersideState(true);
 	}
 
@@ -132,34 +128,6 @@ public class VContextHelp extends VOverlay implements Paintable,
 		}
 	}-*/;
 
-	private void showHelpBubble(UIDL uidl, String helpText) {
-		setHelpText(helpText);
-		Element helpElement = findHelpElement(uidl);
-		if (helpElement != null) {
-			show();
-			setPopupPosition(calculateLeftPosition(helpElement),
-					calculateTopPosition(helpElement));
-		}
-	}
-
-	private int calculateTopPosition(Element helpElement) {
-		return helpElement.getAbsoluteTop() + helpElement.getOffsetHeight() / 2
-				- getOffsetHeight() / 2;
-	}
-
-	private int calculateLeftPosition(Element helpElement) {
-		int left = helpElement.getAbsoluteLeft() + helpElement.getOffsetWidth();
-		left = makeFitInBrowserWindow(left, helpElement);
-		return left;
-	}
-
-	private int makeFitInBrowserWindow(int left, Element helpElement) {
-		int newPosition = left;
-		if (newPosition + getOffsetWidth() > Document.get().getClientWidth()) {
-			newPosition -= helpElement.getOffsetWidth() / 2;
-		}
-		return newPosition;
-	}
 
 	private Element findHelpElement(UIDL uidl) {
 		String id = uidl.getStringVariable("selectedComponentId");
@@ -190,10 +158,6 @@ public class VContextHelp extends VOverlay implements Paintable,
 		return null;
 	}
 
-	private void setHelpText(String helpText) {
-		helpHtml.setHTML(helpText);
-		helpHtml.setStyleName("helpText");
-	}
 
 	public static native Element getFocusedElement()
 	/*-{
@@ -219,4 +183,64 @@ public class VContextHelp extends VOverlay implements Paintable,
 		client.updateVariable(uidlId, "hidden", hidden, immediate);
 	}
 
+    /**
+     * Make sure that we remove the bubble when the main widget is removed.
+     * 
+     * @see com.google.gwt.user.client.ui.Widget#onUnload()
+     */
+    @Override
+    protected void onDetach() {
+        bubble.hide();
+        super.onDetach();
+    }
+
+	
+	private class HelpBubble extends VOverlay {
+		private static final int Z_INDEX_BASE = 90000;
+
+		private HTML helpHtml = new HTML();
+
+		public HelpBubble() {
+            super(true, false, false); // autoHide, modal, dropshadow
+            setStylePrimaryName(CLASSNAME + "-bubble");
+			setZIndex(Z_INDEX_BASE);
+			setWidget(helpHtml);
+			// Make sure we are hidden
+			hide();
+		}
+		
+		public void setHelpText(String helpText) {
+			helpHtml.setHTML(helpText);
+			helpHtml.setStyleName("helpText");
+		}
+		
+		private void showHelpBubble(UIDL uidl, String helpText) {
+			setHelpText(helpText);
+			Element helpElement = findHelpElement(uidl);
+			if (helpElement != null) {
+				show();
+				setPopupPosition(calculateLeftPosition(helpElement),
+						calculateTopPosition(helpElement));
+			}
+		}
+
+		private int calculateTopPosition(Element helpElement) {
+			return helpElement.getAbsoluteTop() + helpElement.getOffsetHeight() / 2
+					- getOffsetHeight() / 2;
+		}
+
+		private int calculateLeftPosition(Element helpElement) {
+			int left = helpElement.getAbsoluteLeft() + helpElement.getOffsetWidth();
+			left = makeFitInBrowserWindow(left, helpElement);
+			return left;
+		}
+
+		private int makeFitInBrowserWindow(int left, Element helpElement) {
+			int newPosition = left;
+			if (newPosition + getOffsetWidth() > Document.get().getClientWidth()) {
+				newPosition -= helpElement.getOffsetWidth() / 2;
+			}
+			return newPosition;
+		}
+	}
 }

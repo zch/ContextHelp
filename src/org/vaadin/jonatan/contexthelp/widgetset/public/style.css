@@ -1,4 +1,4 @@
-.v-helprouter {
+.v-helprouter-bubble {
 	margin: 0 0 0 0;
 	padding: 0 0 0 0;
 
@@ -7,7 +7,7 @@
 	line-height: normal;
 }
 
-.v-helprouter .popupContent {
+.v-helprouter-bubble .popupContent {
 	background-image: url(images/desc-arrow.png);
 	background-position: 0px 50%;
 	background-repeat: no-repeat;
@@ -15,7 +15,7 @@
 	width: 200px;
 }
 
-.v-helprouter .popupContent .helpText {
+.v-helprouter-bubble .popupContent .helpText {
 	background: #131516 url(images/bg.png) repeat-x scroll 0 0;	
 	color: #ddd;
 	-moz-border-radius-topleft: 10px;
