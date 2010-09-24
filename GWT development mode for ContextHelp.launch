@@ -8,7 +8,7 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.DevMode"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-noserver -war WebContent/VAADIN/widgetsets org.vaadin.jonatan.contexthelp.widgetset.ContexthelpApplicationWidgetset -startupUrl http://localhost:8080/ContextHelp"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-noserver -war WebContent/VAADIN/widgetsets org.vaadin.jonatan.contexthelp.widgetset.ContexthelpWidgetset -startupUrl http://localhost:8080/ContextHelp"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ContextHelp"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx512M -XX:MaxPermSize=256M"/>
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="/Users/jonatan/Documents/Projects/CF/ContextHelp"/>

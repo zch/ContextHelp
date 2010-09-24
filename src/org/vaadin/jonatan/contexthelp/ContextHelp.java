@@ -29,6 +29,7 @@ public class ContextHelp extends AbstractComponent {
 	private List<Component> components;
 
 	private String selectedComponentId = "";
+	private boolean hidden = true;
 
 	private boolean followFocus = false;
 
@@ -37,14 +38,20 @@ public class ContextHelp extends AbstractComponent {
 		components = new ArrayList<Component>();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void changeVariables(Object source, Map variables) {
-		selectedComponentId = (String) variables.get("selectedComponentId");
+		if (variables.containsKey("selectedComponentId")) {
+			selectedComponentId = (String) variables.get("selectedComponentId");
+		}
+		if (variables.containsKey("hidden")) {
+			hidden = (Boolean) variables.get("hidden");
+		}
 		requestRepaint();
 	}
 
 	public void paintContent(PaintTarget target) throws PaintException {
 		target.addVariable(this, "selectedComponentId", selectedComponentId);
+		target.addVariable(this, "hidden", hidden);
 		if (selectedComponentId != null && !selectedComponentId.equals("")
 				&& helpHTML.containsKey(selectedComponentId)) {
 			target.addAttribute("helpText", helpHTML.get(selectedComponentId));
@@ -110,5 +117,4 @@ public class ContextHelp extends AbstractComponent {
 	public boolean isFollowFocus() {
 		return followFocus;
 	}
-
 }

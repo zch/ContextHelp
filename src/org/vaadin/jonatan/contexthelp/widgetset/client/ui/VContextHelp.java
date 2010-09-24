@@ -32,10 +32,10 @@ public class VContextHelp extends VOverlay implements Paintable,
 	/** Reference to the server connection object. */
 	ApplicationConnection client;
 
-	private String selectedComponentIdVariable;
-
 	private boolean followFocus = true;
-	
+
+	private boolean hidden = true;
+
 	private HTML helpHtml = new HTML();
 
 	/**
@@ -48,10 +48,11 @@ public class VContextHelp extends VOverlay implements Paintable,
 		setZIndex(Z_INDEX_BASE);
 
 		setWidget(helpHtml);
-		
+
 		Event.addNativePreviewHandler(this);
 		suppressHelpForIE();
 
+		// Make sure our bubble is hidden
 		hide();
 	}
 
@@ -69,52 +70,59 @@ public class VContextHelp extends VOverlay implements Paintable,
 		// Save the UIDL identifier for the component
 		uidlId = uidl.getId();
 
-		if (uidl.getVariableNames().size() == 1) {
-			selectedComponentIdVariable = uidl.getVariableNames().iterator()
-					.next();
-		} else {
-			selectedComponentIdVariable = "selectedComponentId";
-		}
-
 		followFocus = uidl.getBooleanAttribute("followFocus");
+		hidden = uidl.getBooleanVariable("hidden");
 
 		String helpText = uidl.getStringAttribute("helpText");
-		if (helpText != null) {
+		if (!hidden && helpText != null) {
 			showHelpBubble(uidl, helpText);
-		} else if (isShowing()) {
+		} else {
+			hidden = true;
 			hide();
+			updateServersideState(false);
 		}
 	}
 
 	public void onPreviewNativeEvent(NativePreviewEvent event) {
 		if (followFocus && getElement() != null) {
 			if (isFocusMovingEvent(event)) {
-				updateFocusedElement();
+				openBubble();
 			}
 		} else {
 			if (isF1Pressed(event)) {
-				updateFocusedElement();
+				openBubble();
 				event.cancel();
 			} else if (isKeyDownOrClick(event) && isShowing()) {
-				hide();
+				closeBubble();
 			}
 		}
 	}
 
+	private void openBubble() {
+		hidden = false;
+		updateServersideState(true);
+	}
+	
+	private void closeBubble() {
+		hidden = true;
+		hide();
+		updateServersideState(true);
+	}
+
 	private boolean isFocusMovingEvent(NativePreviewEvent event) {
 		return event.getTypeInt() == Event.ONMOUSEUP
-				|| (event.getTypeInt() == Event.ONKEYUP
-				&& event.getNativeEvent().getKeyCode() == KeyCodes.KEY_TAB);
+				|| (event.getTypeInt() == Event.ONKEYUP && event
+						.getNativeEvent().getKeyCode() == KeyCodes.KEY_TAB);
 	}
 
 	private boolean isF1Pressed(NativePreviewEvent event) {
 		return event.getTypeInt() == Event.ONKEYDOWN
-		&& event.getNativeEvent().getKeyCode() == 112;
+				&& event.getNativeEvent().getKeyCode() == 112;
 	}
-	
+
 	private boolean isKeyDownOrClick(NativePreviewEvent event) {
 		return event.getTypeInt() == Event.ONKEYDOWN
-		|| event.getTypeInt() == Event.ONCLICK;
+				|| event.getTypeInt() == Event.ONCLICK;
 	}
 
 	public native void suppressHelpForIE()
@@ -124,12 +132,14 @@ public class VContextHelp extends VOverlay implements Paintable,
 		}
 	}-*/;
 
-
 	private void showHelpBubble(UIDL uidl, String helpText) {
 		setHelpText(helpText);
-		show();
 		Element helpElement = findHelpElement(uidl);
-		setPopupPosition(calculateLeftPosition(helpElement), calculateTopPosition(helpElement));
+		if (helpElement != null) {
+			show();
+			setPopupPosition(calculateLeftPosition(helpElement),
+					calculateTopPosition(helpElement));
+		}
 	}
 
 	private int calculateTopPosition(Element helpElement) {
@@ -152,8 +162,11 @@ public class VContextHelp extends VOverlay implements Paintable,
 	}
 
 	private Element findHelpElement(UIDL uidl) {
-		Element helpElement = DOM.getElementById(uidl
-				.getStringVariable(selectedComponentIdVariable));
+		String id = uidl.getStringVariable("selectedComponentId");
+		if (id == null || id.length() == 0) {
+			return null;
+		}
+		Element helpElement = DOM.getElementById(id);
 		Element contentElement = findContentElement(helpElement);
 		if (contentElement != null) {
 			return contentElement;
@@ -200,9 +213,10 @@ public class VContextHelp extends VOverlay implements Paintable,
 		return elementWithId;
 	}
 
-	private void updateFocusedElement() {
-		client.updateVariable(uidlId, selectedComponentIdVariable,
-				getHelpElement().getId(), true);
+	private void updateServersideState(boolean immediate) {
+		client.updateVariable(uidlId, "selectedComponentId", getHelpElement()
+				.getId(), false);
+		client.updateVariable(uidlId, "hidden", hidden, immediate);
 	}
 
 }
