@@ -171,7 +171,7 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private static Element findFirstElementInHierarchyWithId(Element focused) {
 		Element elementWithId = focused;
-		while ("".equals(elementWithId.getId())) {
+		while ("".equals(elementWithId.getId()) || elementWithId.getId().startsWith("gwt-uid")) {
 			elementWithId = elementWithId.getParentElement();
 		}
 		return elementWithId;
