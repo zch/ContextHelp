@@ -3,79 +3,70 @@ package org.vaadin.jonatan.contexthelp.demo;
 import org.vaadin.jonatan.contexthelp.ContextHelp;
 
 import com.vaadin.Application;
+import com.vaadin.service.ApplicationContext.TransactionListener;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Select;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Window;
 
-public class ContextHelpApplication extends Application {
+public class ContextHelpApplication extends Application implements TransactionListener {
 	private static final long serialVersionUID = 1L;
+
+	final ContextHelp contextHelp = new ContextHelp();
+
+	public static ThreadLocal<ContextHelpApplication> currentApplication = new ThreadLocal<ContextHelpApplication>();
 
 	@Override
 	public void init() {
 		Window mainWindow = new Window("Context Help");
-		final ContextHelp contextHelp = new ContextHelp();
 		mainWindow.addComponent(contextHelp);
+		setCurrent(this);
+		
+		getContext().addTransactionListener(this);
 
-		CheckBox followFocus = new CheckBox("Follow focus",
-				new Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
-
-			public void buttonClick(ClickEvent event) {
-				contextHelp.setFollowFocus((Boolean) event.getButton()
-						.getValue());
-			}
-		});
-		followFocus.setImmediate(true);
-		mainWindow.addComponent(followFocus);
-
-		VerticalLayout layout = new VerticalLayout();
-		mainWindow.addComponent(layout);
-
-		final TextField bar = new TextField("bar");
-		TextField foo = new TextField("foo");
-		layout.addComponent(bar);
-		layout.addComponent(foo);
-		layout.addComponent(new TextField("No help"));
-
-		layout.addComponent(new Button("Open help for bar",
+		CheckBox followFocus = new CheckBox("Make the help bubble follow focus",
 				new Button.ClickListener() {
 					private static final long serialVersionUID = 1L;
 
 					public void buttonClick(ClickEvent event) {
-						contextHelp.showHelpFor(bar);
+						contextHelp.setFollowFocus((Boolean) event.getButton()
+								.getValue());
 					}
-				}));
+				});
+		followFocus.setImmediate(true);
+		mainWindow.addComponent(followFocus);
 
-		contextHelp
-				.addHelpForComponent(bar,
-						"The text field allows you to write many, many, many, many, many things.");
-		contextHelp
-				.addHelpForComponent(
-						foo,
-						"<b>foo</b> can be <i>formatted</i> using standard <b style='font-size: 20px; color: red;'>HTML</b> and inline <b>CSS</b>.");
-
-		Panel panel = new Panel("Panel");
-		contextHelp
-				.addHelpForComponent(
-						panel,
-						"Some fields in this panel have no help.<br/><br/>Instead of field specific help, this message for the entire panel is displayed.<br/><br/>In case this bubble would go <i>outside</i> the view if it was placed to the left of the component, it is automatically placed pointing at the center.");
-		panel.addComponent(new TextField("Try me!"));
-		panel.addComponent(new TextField("me too!"));
-		Select helpedField = new Select();
-		panel.addComponent(helpedField);
-		contextHelp
-				.addHelpForComponent(
-						helpedField,
-						"Selects also work!<br/><span style='font-size: 10px;'>(As do all fields that can be focused)</span>");
-
-		mainWindow.addComponent(panel);
+		TabSheet tabs = new TabSheet();
+		tabs.addTab(new AddressForm(), "Address form", null);
+		tabs.addTab(new GeneralHelp(), "General help", null);
+		tabs.addTab(new CodeSamples(), "Code examples", null);
+		mainWindow.addComponent(tabs);
 
 		setMainWindow(mainWindow);
 	}
 
+	private void setCurrent(ContextHelpApplication app) {
+		currentApplication.set(app);
+	}
+	
+	public static ContextHelpApplication getCurrent() {
+		return currentApplication.get();
+	}
+
+	public static ContextHelp getContextHelp() {
+		return getCurrent().contextHelp;
+	}
+
+	public void transactionStart(Application application, Object transactionData) {
+		if (application == this) {
+			setCurrent(this);
+		}
+	}
+
+	public void transactionEnd(Application application, Object transactionData) {
+		if (application == this) {
+			setCurrent(null);
+		}
+	}
 }
