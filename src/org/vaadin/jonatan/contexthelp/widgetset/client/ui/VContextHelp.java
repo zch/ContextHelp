@@ -19,7 +19,39 @@ public class VContextHelp extends HTML implements Paintable,
 		NativePreviewHandler {
 
 	private enum Placement {
-		RIGHT, LEFT, ABOVE, BELOW;
+		RIGHT, LEFT, ABOVE, BELOW, DEFAULT;
+
+		public int getLeft(HelpBubble bubble, Element helpElement) {
+			switch (this) {
+			case RIGHT:
+				return helpElement.getAbsoluteLeft()
+						+ helpElement.getOffsetWidth();
+			case LEFT:
+				return helpElement.getAbsoluteLeft() - bubble.getOffsetWidth();
+			case ABOVE:
+			case BELOW:
+				return helpElement.getAbsoluteLeft()
+						+ helpElement.getOffsetWidth() / 2
+						- bubble.getOffsetWidth() / 2;
+			}
+			return 0;
+		}
+
+		public int getTop(HelpBubble bubble, Element helpElement) {
+			switch (this) {
+			case RIGHT:
+			case LEFT:
+				return helpElement.getAbsoluteTop()
+						+ helpElement.getOffsetHeight() / 2
+						- bubble.getOffsetHeight() / 2;
+			case ABOVE:
+				return helpElement.getAbsoluteTop() - bubble.getOffsetHeight();
+			case BELOW:
+				return helpElement.getAbsoluteTop()
+						+ helpElement.getOffsetHeight();
+			}
+			return 0;
+		}
 	}
 
 	/** Set the tagname used to statically resolve widget from UIDL. */
@@ -71,9 +103,13 @@ public class VContextHelp extends HTML implements Paintable,
 		followFocus = uidl.getBooleanAttribute("followFocus");
 		hidden = uidl.getBooleanVariable("hidden");
 
+		Placement placement = Placement.DEFAULT;
+		if (uidl.hasAttribute("placement")) {
+			placement = Placement.valueOf(uidl.getStringAttribute("placement"));
+		}
 		String helpText = uidl.getStringAttribute("helpText");
 		if (!hidden && helpText != null) {
-			bubble.showHelpBubble(uidl, helpText);
+			bubble.showHelpBubble(uidl, helpText, placement);
 		} else {
 			hidden = true;
 			if (bubble.isShowing()) {
@@ -216,44 +252,41 @@ public class VContextHelp extends HTML implements Paintable,
 			helpHtml.setStyleName("helpText");
 		}
 
-		private void showHelpBubble(UIDL uidl, String helpText) {
+		private void showHelpBubble(UIDL uidl, String helpText,
+				Placement placement) {
 			setHelpText(helpText);
 			Element helpElement = findHelpElement(uidl);
 			if (helpElement != null) {
 				show();
-				calculateAndSetPopupPosition(helpElement);
+				calculateAndSetPopupPosition(helpElement, placement);
 			}
 		}
 
-		private void calculateAndSetPopupPosition(Element helpElement) {
-			// By default, place the popup to the right of the field
-			Placement placement = Placement.RIGHT;
-			int left = helpElement.getAbsoluteLeft()
-					+ helpElement.getOffsetWidth();
-			int top = helpElement.getAbsoluteTop()
-					+ helpElement.getOffsetHeight() / 2 - getOffsetHeight() / 2;
-
-			// Would the popup go too far to the right?
-			if (left + getOffsetWidth() > Document.get().getClientWidth()) {
-				// Ok, either place it below or above the field
-				left -= helpElement.getOffsetWidth() / 2 + getOffsetWidth() / 2;
-
-				// Check whether there's room below the field
-				top = helpElement.getAbsoluteTop()
-						+ helpElement.getOffsetHeight();
-				if (top + getOffsetHeight() < Document.get().getClientHeight()) {
-					// There's room
-					placement = Placement.BELOW;
-				} else {
-					// Place the popup above the field
-					top = helpElement.getAbsoluteTop() - getOffsetHeight();
-					placement = Placement.ABOVE;
-				}
-
+		private void calculateAndSetPopupPosition(Element helpElement,
+				Placement placement) {
+			Placement finalPlacement = placement;
+			if (placement == Placement.DEFAULT) {
+				finalPlacement = findDefaultPlacement(helpElement);
 			}
+			updatePopupStyleForPlacement(finalPlacement);
+			setPopupPosition(finalPlacement.getLeft(this, helpElement),
+					finalPlacement.getTop(this, helpElement));
+		}
 
-			updatePopupStyleForPlacement(placement);
-			setPopupPosition(left, top);
+		private Placement findDefaultPlacement(Element helpElement) {
+			// Would the popup go too far to the right?
+			if (Placement.RIGHT.getLeft(this, helpElement) + getOffsetWidth() > Document
+					.get().getClientWidth()) {
+				// Yes, either place it below (if there's room) or above the field
+				if (Placement.BELOW.getTop(this, helpElement)
+						+ getOffsetHeight() < Document.get().getClientHeight()) {
+					return Placement.BELOW;
+				} else {
+					return Placement.ABOVE;
+				}
+			}
+			// By default, place the popup to the right of the field
+			return Placement.RIGHT;
 		}
 
 		private void updatePopupStyleForPlacement(Placement placement) {

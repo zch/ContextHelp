@@ -9,7 +9,7 @@
 
 .v-helprouter-bubble .popupContent {
 	background-repeat: no-repeat;
-	min-width: 200px;
+	max-width: 400px;
 }
 .v-helprouter-bubble.right .popupContent {
 	background-image: url(images/desc-arrow-left.png);
