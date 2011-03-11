@@ -18,6 +18,10 @@ import com.vaadin.terminal.gwt.client.ui.VOverlay;
 public class VContextHelp extends HTML implements Paintable,
 		NativePreviewHandler {
 
+	private enum Placement {
+		RIGHT, LEFT, ABOVE, BELOW;
+	}
+
 	/** Set the tagname used to statically resolve widget from UIDL. */
 	public static final String TAGNAME = "helprouter";
 
@@ -31,9 +35,9 @@ public class VContextHelp extends HTML implements Paintable,
 	ApplicationConnection client;
 
 	private boolean followFocus = true;
-	
+
 	private boolean hidden = true;
-	
+
 	private final HelpBubble bubble;
 
 	/**
@@ -98,7 +102,7 @@ public class VContextHelp extends HTML implements Paintable,
 		hidden = false;
 		updateServersideState(true);
 	}
-	
+
 	private void closeBubble() {
 		hidden = true;
 		bubble.hide();
@@ -127,7 +131,6 @@ public class VContextHelp extends HTML implements Paintable,
 			return false;
 		}
 	}-*/;
-
 
 	private Element findHelpElement(UIDL uidl) {
 		String id = uidl.getStringVariable("selectedComponentId");
@@ -158,7 +161,6 @@ public class VContextHelp extends HTML implements Paintable,
 		return null;
 	}
 
-
 	public static native Element getFocusedElement()
 	/*-{
 		return $doc.activeElement;
@@ -171,7 +173,8 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private static Element findFirstElementInHierarchyWithId(Element focused) {
 		Element elementWithId = focused;
-		while ("".equals(elementWithId.getId()) || elementWithId.getId().startsWith("gwt-uid")) {
+		while ("".equals(elementWithId.getId())
+				|| elementWithId.getId().startsWith("gwt-uid")) {
 			elementWithId = elementWithId.getParentElement();
 		}
 		return elementWithId;
@@ -183,64 +186,81 @@ public class VContextHelp extends HTML implements Paintable,
 		client.updateVariable(uidlId, "hidden", hidden, immediate);
 	}
 
-    /**
-     * Make sure that we remove the bubble when the main widget is removed.
-     * 
-     * @see com.google.gwt.user.client.ui.Widget#onUnload()
-     */
-    @Override
-    protected void onDetach() {
-        bubble.hide();
-        super.onDetach();
-    }
+	/**
+	 * Make sure that we remove the bubble when the main widget is removed.
+	 * 
+	 * @see com.google.gwt.user.client.ui.Widget#onUnload()
+	 */
+	@Override
+	protected void onDetach() {
+		bubble.hide();
+		super.onDetach();
+	}
 
-	
 	private class HelpBubble extends VOverlay {
 		private static final int Z_INDEX_BASE = 90000;
 
 		private HTML helpHtml = new HTML();
 
 		public HelpBubble() {
-            super(true, false, false); // autoHide, modal, dropshadow
-            setStylePrimaryName(CLASSNAME + "-bubble");
+			super(true, false, false); // autoHide, modal, dropshadow
+			setStylePrimaryName(CLASSNAME + "-bubble");
 			setZIndex(Z_INDEX_BASE);
 			setWidget(helpHtml);
 			// Make sure we are hidden
 			hide();
 		}
-		
+
 		public void setHelpText(String helpText) {
 			helpHtml.setHTML(helpText);
 			helpHtml.setStyleName("helpText");
 		}
-		
+
 		private void showHelpBubble(UIDL uidl, String helpText) {
 			setHelpText(helpText);
 			Element helpElement = findHelpElement(uidl);
 			if (helpElement != null) {
 				show();
-				setPopupPosition(calculateLeftPosition(helpElement),
-						calculateTopPosition(helpElement));
+				calculateAndSetPopupPosition(helpElement);
 			}
 		}
 
-		private int calculateTopPosition(Element helpElement) {
-			return helpElement.getAbsoluteTop() + helpElement.getOffsetHeight() / 2
-					- getOffsetHeight() / 2;
-		}
+		private void calculateAndSetPopupPosition(Element helpElement) {
+			// By default, place the popup to the right of the field
+			Placement placement = Placement.RIGHT;
+			int left = helpElement.getAbsoluteLeft()
+					+ helpElement.getOffsetWidth();
+			int top = helpElement.getAbsoluteTop()
+					+ helpElement.getOffsetHeight() / 2 - getOffsetHeight() / 2;
 
-		private int calculateLeftPosition(Element helpElement) {
-			int left = helpElement.getAbsoluteLeft() + helpElement.getOffsetWidth();
-			left = makeFitInBrowserWindow(left, helpElement);
-			return left;
-		}
+			// Would the popup go too far to the right?
+			if (left + getOffsetWidth() > Document.get().getClientWidth()) {
+				// Ok, either place it below or above the field
+				left -= helpElement.getOffsetWidth() / 2 + getOffsetWidth() / 2;
 
-		private int makeFitInBrowserWindow(int left, Element helpElement) {
-			int newPosition = left;
-			if (newPosition + getOffsetWidth() > Document.get().getClientWidth()) {
-				newPosition -= helpElement.getOffsetWidth() / 2;
+				// Check whether there's room below the field
+				top = helpElement.getAbsoluteTop()
+						+ helpElement.getOffsetHeight();
+				if (top + getOffsetHeight() < Document.get().getClientHeight()) {
+					// There's room
+					placement = Placement.BELOW;
+				} else {
+					// Place the popup above the field
+					top = helpElement.getAbsoluteTop() - getOffsetHeight();
+					placement = Placement.ABOVE;
+				}
+
 			}
-			return newPosition;
+
+			updatePopupStyleForPlacement(placement);
+			setPopupPosition(left, top);
+		}
+
+		private void updatePopupStyleForPlacement(Placement placement) {
+			for (Placement p : Placement.values()) {
+				removeStyleName(p.name().toLowerCase());
+			}
+			addStyleName(placement.name().toLowerCase());
 		}
 	}
 }

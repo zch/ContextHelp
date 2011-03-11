@@ -8,11 +8,28 @@
 }
 
 .v-helprouter-bubble .popupContent {
-	background-image: url(images/desc-arrow.png);
-	background-position: 0px 50%;
 	background-repeat: no-repeat;
+	min-width: 200px;
+}
+.v-helprouter-bubble.right .popupContent {
+	background-image: url(images/desc-arrow-left.png);
+	background-position: 0px 50%;
 	padding-left: 5px;
-	width: 200px;
+}
+.v-helprouter-bubble.left .popupContent {
+	background-image: url(images/desc-arrow-right.png);
+	background-position: 100% 50%;
+	padding-right: 5px;
+}
+.v-helprouter-bubble.above .popupContent {
+	background-image: url(images/desc-arrow-down.png);
+	background-position: 50% 100%;
+	padding-bottom: 5px;
+}
+.v-helprouter-bubble.below .popupContent {
+	background-image: url(images/desc-arrow-up.png);
+	background-position: 50% 0px;
+	padding-top: 5px;
 }
 
 .v-helprouter-bubble .popupContent .helpText {
@@ -27,5 +44,4 @@
 	-moz-border-radius-bottomright: 10px;
 	-webkit-border-bottom-right-radius: 10px;
 	padding: 2em;
-	width: 100%;
 }
