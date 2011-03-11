@@ -26,6 +26,7 @@ public class ContextHelp extends AbstractComponent {
 	private static int helpComponentIdCounter = 0;
 
 	private HashMap<String, String> helpHTML;
+	private HashMap<String, Placement> placements;
 	private List<Component> components;
 
 	private String selectedComponentId = "";
@@ -33,8 +34,14 @@ public class ContextHelp extends AbstractComponent {
 
 	private boolean followFocus = false;
 
+	// These need to be available in the Placement enum in VContextHelp
+	public enum Placement {
+		RIGHT, LEFT, ABOVE, BELOW;
+	}
+
 	public ContextHelp() {
 		helpHTML = new HashMap<String, String>();
+		placements = new HashMap<String, Placement>();
 		components = new ArrayList<Component>();
 	}
 
@@ -55,6 +62,10 @@ public class ContextHelp extends AbstractComponent {
 		if (selectedComponentId != null && !selectedComponentId.equals("")
 				&& helpHTML.containsKey(selectedComponentId)) {
 			target.addAttribute("helpText", helpHTML.get(selectedComponentId));
+			if (placements.containsKey(selectedComponentId)) {
+				target.addAttribute("placement",
+						placements.get(selectedComponentId).name());
+			}
 		}
 		target.addAttribute("followFocus", followFocus);
 	}
@@ -76,6 +87,29 @@ public class ContextHelp extends AbstractComponent {
 		}
 		components.add(component);
 		helpHTML.put(component.getDebugId(), help);
+	}
+
+	/**
+	 * Registers a help text for a given component. The help text is in HTML
+	 * format and can be formatted as such and styled with inline CSS. It is
+	 * also possible to provide classnames for elements in the HTML and provide
+	 * the CSS rules in the Vaadin theme.
+	 * 
+	 * @param component
+	 *            the component for which to register the help text.
+	 * @param help
+	 *            the help text in HTML.
+	 * @param placement
+	 *            where the help bubble should be placed.
+	 */
+	public void addHelpForComponent(Component component, String help,
+			Placement placement) {
+		if (component.getDebugId() == null) {
+			component.setDebugId(generateComponentId());
+		}
+		components.add(component);
+		helpHTML.put(component.getDebugId(), help);
+		setPlacement(component, placement);
 	}
 
 	private String generateComponentId() {
@@ -117,5 +151,22 @@ public class ContextHelp extends AbstractComponent {
 	 */
 	public boolean isFollowFocus() {
 		return followFocus;
+	}
+
+	/**
+	 * Specifies where the help bubble should be placed in relation to the
+	 * component. This is only active for the specified component. The default
+	 * is to place the help bubble to the right of components and if it doesn't
+	 * fit there, ContextHelp attempts to place it below followed by above the
+	 * component.
+	 * 
+	 * @param component
+	 *            the component for which to define the placement of the help
+	 *            bubble.
+	 * @param placement
+	 *            the placement of the help bubble.
+	 */
+	public void setPlacement(Component component, Placement placement) {
+		placements.put(component.getDebugId(), placement);
 	}
 }
