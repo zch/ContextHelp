@@ -41,6 +41,23 @@
   		<param-value>org.vaadin.jonatan.contexthelp.widgetset.ContexthelpWidgetset</param-value>
   	</init-param>
   </servlet>
+  <servlet>
+  	<servlet-name>scrolling test</servlet-name>
+  	<servlet-class>
+  	com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
+  	<init-param>
+  		<description>
+  		Vaadin application class to start</description>
+  		<param-name>application</param-name>
+  		<param-value>org.vaadin.jonatan.contexthelp.test.applications.TestScrollingApplication</param-value>
+  	</init-param>
+  	<init-param>
+  		<description>
+  		Application widgetset</description>
+  		<param-name>widgetset</param-name>
+  		<param-value>org.vaadin.jonatan.contexthelp.widgetset.ContexthelpWidgetset</param-value>
+  	</init-param>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>ContextHelp Application</servlet-name>
   	<url-pattern>/*</url-pattern>
@@ -48,6 +65,10 @@
   <servlet-mapping>
   	<servlet-name>CheckBox test</servlet-name>
   	<url-pattern>/test/checkbox/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>scrolling test</servlet-name>
+  	<url-pattern>/test/scrolling/*</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

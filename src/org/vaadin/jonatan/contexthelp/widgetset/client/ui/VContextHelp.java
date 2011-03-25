@@ -9,6 +9,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTML;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -54,6 +55,8 @@ public class VContextHelp extends HTML implements Paintable,
 		}
 	}
 
+	private static final int SCROLL_UPDATER_INTERVAL = 100;
+
 	/** Set the tagname used to statically resolve widget from UIDL. */
 	public static final String TAGNAME = "helprouter";
 
@@ -72,6 +75,8 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private final HelpBubble bubble;
 
+	private final Timer scrollUpdater;
+
 	private int helpKeyCode = 112; // F1 by default
 
 	/**
@@ -86,6 +91,11 @@ public class VContextHelp extends HTML implements Paintable,
 		suppressHelpForIE();
 
 		bubble = new HelpBubble();
+		scrollUpdater = new Timer() {
+			public void run() {
+				bubble.updatePositionIfNeeded();
+			}
+		};
 	}
 
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
@@ -139,11 +149,13 @@ public class VContextHelp extends HTML implements Paintable,
 	}
 
 	private void openBubble() {
+		scrollUpdater.scheduleRepeating(SCROLL_UPDATER_INTERVAL);
 		hidden = false;
 		updateServersideState(true);
 	}
 
 	private void closeBubble() {
+		scrollUpdater.cancel();
 		hidden = true;
 		bubble.hide();
 		updateServersideState(true);
@@ -244,6 +256,13 @@ public class VContextHelp extends HTML implements Paintable,
 
 		private HTML helpHtml = new HTML();
 
+		private Element helpElement;
+
+		private int elementTop;
+		private int elementLeft;
+
+		private Placement placement;
+
 		public HelpBubble() {
 			super(false, false, false); // autoHide, modal, dropshadow
 			setStylePrimaryName(CLASSNAME + "-bubble");
@@ -258,28 +277,40 @@ public class VContextHelp extends HTML implements Paintable,
 			helpHtml.setStyleName("helpText");
 		}
 
-		private void showHelpBubble(UIDL uidl, String helpText,
+		public void showHelpBubble(UIDL uidl, String helpText,
 				Placement placement) {
+			this.placement = placement;
 			setHelpText(helpText);
-			Element helpElement = findHelpElement(uidl);
+			helpElement = findHelpElement(uidl);
 			if (helpElement != null) {
 				show();
-				calculateAndSetPopupPosition(helpElement, placement);
+				calculateAndSetPopupPosition();
 			}
 		}
 
-		private void calculateAndSetPopupPosition(Element helpElement,
-				Placement placement) {
+		public void updatePositionIfNeeded() {
+			if (elementLeft != helpElement.getAbsoluteLeft()
+					|| elementTop != helpElement.getAbsoluteTop()) {
+				calculateAndSetPopupPosition();
+			}
+		}
+
+		private void calculateAndSetPopupPosition() {
+			// Save the current position for checking whether the element has
+			// moved == scrolled
+			elementLeft = helpElement.getAbsoluteLeft();
+			elementTop = helpElement.getAbsoluteTop();
+
 			Placement finalPlacement = placement;
 			if (placement == Placement.DEFAULT) {
-				finalPlacement = findDefaultPlacement(helpElement);
+				finalPlacement = findDefaultPlacement();
 			}
 			updatePopupStyleForPlacement(finalPlacement);
 			setPopupPosition(finalPlacement.getLeft(this, helpElement),
 					finalPlacement.getTop(this, helpElement));
 		}
 
-		private Placement findDefaultPlacement(Element helpElement) {
+		private Placement findDefaultPlacement() {
 			// Would the popup go too far to the right?
 			if (Placement.RIGHT.getLeft(this, helpElement) + getOffsetWidth() > Document
 					.get().getClientWidth()) {
