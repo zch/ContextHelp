@@ -72,6 +72,8 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private final HelpBubble bubble;
 
+	private int helpKeyCode = 112; // F1 by default
+
 	/**
 	 * The constructor should first call super() to initialize the component and
 	 * then handle any initialization relevant to Vaadin.
@@ -101,6 +103,8 @@ public class VContextHelp extends HTML implements Paintable,
 		uidlId = uidl.getId();
 
 		followFocus = uidl.getBooleanAttribute("followFocus");
+		helpKeyCode = uidl.getIntAttribute("helpKey");
+
 		hidden = uidl.getBooleanVariable("hidden");
 
 		Placement placement = Placement.DEFAULT;
@@ -125,7 +129,7 @@ public class VContextHelp extends HTML implements Paintable,
 				openBubble();
 			}
 		} else {
-			if (isF1Pressed(event)) {
+			if (isHelpKeyPressed(event)) {
 				openBubble();
 				event.cancel();
 			} else if (isKeyDownOrClick(event) && bubble.isShowing()) {
@@ -151,9 +155,9 @@ public class VContextHelp extends HTML implements Paintable,
 						.getNativeEvent().getKeyCode() == KeyCodes.KEY_TAB);
 	}
 
-	private boolean isF1Pressed(NativePreviewEvent event) {
+	private boolean isHelpKeyPressed(NativePreviewEvent event) {
 		return event.getTypeInt() == Event.ONKEYDOWN
-				&& event.getNativeEvent().getKeyCode() == 112;
+				&& event.getNativeEvent().getKeyCode() == helpKeyCode;
 	}
 
 	private boolean isKeyDownOrClick(NativePreviewEvent event) {
@@ -209,8 +213,10 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private static Element findFirstElementInHierarchyWithId(Element focused) {
 		Element elementWithId = focused;
-		while ("".equals(elementWithId.getId())
-				|| elementWithId.getId().startsWith("gwt-uid")) {
+		while (("".equals(elementWithId.getId())
+				|| elementWithId.getId() == null || elementWithId.getId()
+				.startsWith("gwt-uid"))
+				&& elementWithId.getParentElement() != null) {
 			elementWithId = elementWithId.getParentElement();
 		}
 		return elementWithId;
@@ -239,7 +245,7 @@ public class VContextHelp extends HTML implements Paintable,
 		private HTML helpHtml = new HTML();
 
 		public HelpBubble() {
-			super(true, false, false); // autoHide, modal, dropshadow
+			super(false, false, false); // autoHide, modal, dropshadow
 			setStylePrimaryName(CLASSNAME + "-bubble");
 			setZIndex(Z_INDEX_BASE);
 			setWidget(helpHtml);
@@ -277,7 +283,8 @@ public class VContextHelp extends HTML implements Paintable,
 			// Would the popup go too far to the right?
 			if (Placement.RIGHT.getLeft(this, helpElement) + getOffsetWidth() > Document
 					.get().getClientWidth()) {
-				// Yes, either place it below (if there's room) or above the field
+				// Yes, either place it below (if there's room) or above the
+				// field
 				if (Placement.BELOW.getTop(this, helpElement)
 						+ getOffsetHeight() < Document.get().getClientHeight()) {
 					return Placement.BELOW;

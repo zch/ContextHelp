@@ -12,7 +12,7 @@ public class GeneralHelp extends CustomComponent {
 				"Help texts can be attached to panels or layouts as well.");
 		panel.addComponent(new TextField("Focus me and hit F1"));
 		ContextHelpApplication.getContextHelp().addHelpForComponent(panel,
-				"<h2>Hello from the panel!</h2>");
+				"<h2><span style='color:red;'>Hello</span> from the panel!</h2>");
 		setCompositionRoot(panel);
 	}
 }

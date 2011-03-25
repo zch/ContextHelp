@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
@@ -33,6 +34,8 @@ public class ContextHelp extends AbstractComponent {
 	private boolean hidden = true;
 
 	private boolean followFocus = false;
+
+	private int helpKey = KeyCode.F1;
 
 	// These need to be available in the Placement enum in VContextHelp
 	public enum Placement {
@@ -68,6 +71,7 @@ public class ContextHelp extends AbstractComponent {
 			}
 		}
 		target.addAttribute("followFocus", followFocus);
+		target.addAttribute("helpKey", helpKey);
 	}
 
 	/**
@@ -168,5 +172,24 @@ public class ContextHelp extends AbstractComponent {
 	 */
 	public void setPlacement(Component component, Placement placement) {
 		placements.put(component.getDebugId(), placement);
+	}
+
+	/**
+	 * Sets the key that is used for opening the help bubble. Use the key codes
+	 * found in {@link ShortcutAction.KeyCode}
+	 * 
+	 * @param helpKey
+	 *            the key code for the key that opens the help bubble.
+	 */
+	public void setHelpKey(int helpKey) {
+		this.helpKey = helpKey;
+		requestRepaint();
+	}
+
+	/**
+	 * @return the key code for the key that opens the help bubble.
+	 */
+	public int getHelpKey() {
+		return helpKey;
 	}
 }
