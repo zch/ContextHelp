@@ -134,6 +134,9 @@ public class VContextHelp extends HTML implements Paintable,
 	}
 
 	public void onPreviewNativeEvent(NativePreviewEvent event) {
+		if (!isAttached()) {
+			return;
+		}
 		if (followFocus && getElement() != null) {
 			if (isFocusMovingEvent(event)) {
 				openBubble();
@@ -235,9 +238,11 @@ public class VContextHelp extends HTML implements Paintable,
 	}
 
 	private void updateServersideState(boolean immediate) {
-		client.updateVariable(uidlId, "selectedComponentId", getHelpElement()
-				.getId(), false);
-		client.updateVariable(uidlId, "hidden", hidden, immediate);
+		if (isAttached()) {
+			client.updateVariable(uidlId, "selectedComponentId", getHelpElement()
+					.getId(), false);
+			client.updateVariable(uidlId, "hidden", hidden, immediate);
+		}
 	}
 
 	/**
