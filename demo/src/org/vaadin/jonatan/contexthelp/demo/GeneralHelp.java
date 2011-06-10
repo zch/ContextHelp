@@ -4,8 +4,8 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 
+@SuppressWarnings("serial")
 public class GeneralHelp extends CustomComponent {
-	private static final long serialVersionUID = -4178517532805647621L;
 
 	public GeneralHelp() {
 		Panel panel = new Panel(

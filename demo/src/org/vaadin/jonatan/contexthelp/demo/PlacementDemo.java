@@ -1,6 +1,6 @@
 package org.vaadin.jonatan.contexthelp.demo;
 
-import org.vaadin.jonatan.contexthelp.ContextHelp.Placement;
+import org.vaadin.jonatan.contexthelp.Placement;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CustomComponent;
@@ -8,8 +8,8 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+@SuppressWarnings("serial")
 public class PlacementDemo extends CustomComponent {
-	private static final long serialVersionUID = 1L;
 
 	private GridLayout layout;
 

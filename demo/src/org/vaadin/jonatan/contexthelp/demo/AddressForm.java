@@ -12,8 +12,8 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.TextField;
 
+@SuppressWarnings("serial")
 public class AddressForm extends Form {
-	private static final long serialVersionUID = 6130296907263308785L;
 
 	private static final String companyHelp = "Fill the <i>company</i> field with the name of your company if your address is for official company business.";
 	private static final String nameHelp = "Fill the <i>name</i> field with your name or the name of the contact person for your company.";

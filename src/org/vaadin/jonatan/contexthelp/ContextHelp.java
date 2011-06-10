@@ -1,10 +1,8 @@
 package org.vaadin.jonatan.contexthelp;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -26,10 +24,6 @@ public class ContextHelp extends AbstractComponent {
 
 	private static int helpComponentIdCounter = 0;
 
-	private HashMap<String, String> helpHTML;
-	private HashMap<String, Placement> placements;
-	private List<Component> components;
-
 	private String selectedComponentId = "";
 	private boolean hidden = true;
 
@@ -37,15 +31,10 @@ public class ContextHelp extends AbstractComponent {
 
 	private int helpKey = KeyCode.F1;
 
-	// These need to be available in the Placement enum in VContextHelp
-	public enum Placement {
-		RIGHT, LEFT, ABOVE, BELOW;
-	}
+	private HelpProvider helpProvider;
 
 	public ContextHelp() {
-		helpHTML = new HashMap<String, String>();
-		placements = new HashMap<String, Placement>();
-		components = new ArrayList<Component>();
+		helpProvider = new DefaultHelpProvider();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -62,12 +51,14 @@ public class ContextHelp extends AbstractComponent {
 	public void paintContent(PaintTarget target) throws PaintException {
 		target.addVariable(this, "selectedComponentId", selectedComponentId);
 		target.addVariable(this, "hidden", hidden);
+		String helpHTML = helpProvider.getHtmlForId(selectedComponentId);
 		if (selectedComponentId != null && !selectedComponentId.equals("")
-				&& helpHTML.containsKey(selectedComponentId)) {
-			target.addAttribute("helpText", helpHTML.get(selectedComponentId));
-			if (placements.containsKey(selectedComponentId)) {
-				target.addAttribute("placement",
-						placements.get(selectedComponentId).name());
+				&& helpHTML != null) {
+			target.addAttribute("helpText", helpHTML);
+			Placement placement = helpProvider
+					.getPlacementForId(selectedComponentId);
+			if (placement != null) {
+				target.addAttribute("placement", placement.name());
 			}
 		}
 		target.addAttribute("followFocus", followFocus);
@@ -86,11 +77,13 @@ public class ContextHelp extends AbstractComponent {
 	 *            the help text in HTML.
 	 */
 	public void addHelpForComponent(Component component, String help) {
-		if (component.getDebugId() == null) {
-			component.setDebugId(generateComponentId());
+		if (helpProvider instanceof DefaultHelpProvider) {
+			if (component.getDebugId() == null) {
+				component.setDebugId(generateComponentId());
+			}
+			((DefaultHelpProvider) helpProvider).addHelpForId(
+					component.getDebugId(), help);
 		}
-		components.add(component);
-		helpHTML.put(component.getDebugId(), help);
 	}
 
 	/**
@@ -108,11 +101,7 @@ public class ContextHelp extends AbstractComponent {
 	 */
 	public void addHelpForComponent(Component component, String help,
 			Placement placement) {
-		if (component.getDebugId() == null) {
-			component.setDebugId(generateComponentId());
-		}
-		components.add(component);
-		helpHTML.put(component.getDebugId(), help);
+		addHelpForComponent(component, help);
 		setPlacement(component, placement);
 	}
 
@@ -127,8 +116,7 @@ public class ContextHelp extends AbstractComponent {
 	 *            the component for which to show the help bubble.
 	 */
 	public void showHelpFor(Component component) {
-		if (component.getDebugId() != null
-				&& helpHTML.containsKey(component.getDebugId())) {
+		if (component.getDebugId() != null) {
 			selectedComponentId = component.getDebugId();
 			hidden = false;
 			requestRepaint();
@@ -171,7 +159,10 @@ public class ContextHelp extends AbstractComponent {
 	 *            the placement of the help bubble.
 	 */
 	public void setPlacement(Component component, Placement placement) {
-		placements.put(component.getDebugId(), placement);
+		if (helpProvider instanceof DefaultHelpProvider) {
+			((DefaultHelpProvider) helpProvider).setPlacementOfId(
+					component.getDebugId(), placement);
+		}
 	}
 
 	/**

@@ -9,8 +9,8 @@ import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
+@SuppressWarnings("serial")
 public class CodeSamples extends CustomComponent {
-	private static final long serialVersionUID = -6877593216667244475L;
 
 	private ContextHelp contextHelp = ContextHelpApplication.getContextHelp();
 
