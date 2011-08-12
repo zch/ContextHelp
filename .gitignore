@@ -1,4 +1,3 @@
-syntax:glob
 WebContent/VAADIN/widgetsets/*
 build/classes/*
 build/result/*
