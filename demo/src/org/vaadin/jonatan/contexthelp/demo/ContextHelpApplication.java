@@ -39,6 +39,7 @@ public class ContextHelpApplication extends Application implements TransactionLi
 
 		TabSheet tabs = new TabSheet();
 		tabs.addTab(new AddressForm(), "Address form", null);
+		tabs.addTab(new WrappedFields(), "Wrapped fields", null);
 		tabs.addTab(new GeneralHelp(), "General help", null);
 		tabs.addTab(new PlacementDemo(), "Placement", null);
 		tabs.addTab(new HelpKey(), "Configure the help key", null);
