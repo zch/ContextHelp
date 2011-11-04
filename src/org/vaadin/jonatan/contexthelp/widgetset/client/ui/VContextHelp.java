@@ -1,5 +1,7 @@
 package org.vaadin.jonatan.contexthelp.widgetset.client.ui;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
@@ -98,7 +100,7 @@ public class VContextHelp extends HTML implements Paintable,
 		};
 	}
 
-	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+	public void updateFromUIDL(final UIDL uidl, ApplicationConnection client) {
 		// This call should be made first. Ensure correct implementation,
 		// and let the containing layout manage caption, etc.
 		if (client.updateComponent(this, uidl, true)) {
@@ -117,13 +119,18 @@ public class VContextHelp extends HTML implements Paintable,
 
 		hidden = uidl.getBooleanVariable("hidden");
 
-		Placement placement = Placement.DEFAULT;
-		if (uidl.hasAttribute("placement")) {
-			placement = Placement.valueOf(uidl.getStringAttribute("placement"));
-		}
-		String helpText = uidl.getStringAttribute("helpText");
+		final String helpText = uidl.getStringAttribute("helpText");
 		if (!hidden && helpText != null) {
-			bubble.showHelpBubble(uidl, helpText, placement);
+			Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+				public void execute() {
+					Placement placement = Placement.DEFAULT;
+					if (uidl.hasAttribute("placement")) {
+						placement = Placement.valueOf(uidl
+								.getStringAttribute("placement"));
+					}
+					bubble.showHelpBubble(uidl, helpText, placement);
+				}
+			});
 		} else {
 			hidden = true;
 			if (bubble.isShowing()) {
@@ -193,9 +200,11 @@ public class VContextHelp extends HTML implements Paintable,
 			return null;
 		}
 		Element helpElement = DOM.getElementById(id);
-		Element contentElement = findContentElement(helpElement);
-		if (contentElement != null) {
-			return contentElement;
+		if (helpElement != null) {
+			Element contentElement = findContentElement(helpElement);
+			if (contentElement != null) {
+				return contentElement;
+			}
 		}
 		return helpElement;
 	}
@@ -239,8 +248,8 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private void updateServersideState(boolean immediate) {
 		if (isAttached()) {
-			client.updateVariable(uidlId, "selectedComponentId", getHelpElement()
-					.getId(), false);
+			client.updateVariable(uidlId, "selectedComponentId",
+					getHelpElement().getId(), false);
 			client.updateVariable(uidlId, "hidden", hidden, immediate);
 		}
 	}
