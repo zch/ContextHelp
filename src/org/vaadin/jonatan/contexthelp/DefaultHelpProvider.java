@@ -1,8 +1,10 @@
 package org.vaadin.jonatan.contexthelp;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class DefaultHelpProvider implements HelpProvider {
+@SuppressWarnings("serial")
+public class DefaultHelpProvider implements HelpProvider, Serializable {
 
 	private HashMap<String, String> helpHTML = new HashMap<String, String>();
 	private HashMap<String, Placement> placements = new HashMap<String, Placement>();
