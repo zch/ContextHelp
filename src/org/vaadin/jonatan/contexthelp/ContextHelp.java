@@ -125,7 +125,10 @@ public class ContextHelp extends AbstractComponent {
 			requestRepaint();
 		}
 	}
-	
+
+	/**
+	 * Programmatically hide the help bubble.
+	 */
 	public void hideHelp() {
 		selectedComponentId = null;
 		hidden = true;
@@ -193,10 +196,24 @@ public class ContextHelp extends AbstractComponent {
 		return helpKey;
 	}
 
+	/**
+	 * @return whether the bubble is automatically hidden when the field is
+	 *         unfocused.
+	 */
 	public boolean isHideOnBlur() {
 		return hideOnBlur;
 	}
 
+	/**
+	 * Set whether the bubble should be automatically hidden when the field is
+	 * unfocused.
+	 * 
+	 * This feature is still EXPERIMENTAL, as hiding of the bubble lags in some
+	 * instances when the component it is attached to is removed (navigated away
+	 * from) if you don't hide the bubble manually before switching views.
+	 * 
+	 * @param hideOnBlur
+	 */
 	public void setHideOnBlur(boolean hideOnBlur) {
 		this.hideOnBlur = hideOnBlur;
 	}
