@@ -326,8 +326,8 @@ public class VContextHelp extends HTML implements Paintable,
 	                styleBuf.append(" ");
 	                styleBuf.append(styles[i]);
 	            }
+	            addStyleName(styleBuf.toString());
 	        }
-	        addStyleName(styleBuf.toString());
 		}
 
 		public void setHelpText(String helpText) {
