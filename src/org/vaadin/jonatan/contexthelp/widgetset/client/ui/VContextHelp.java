@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.ui.VOverlay;
 
 public class VContextHelp extends HTML implements Paintable,
@@ -118,7 +119,7 @@ public class VContextHelp extends HTML implements Paintable,
 
 		followFocus = uidl.getBooleanAttribute("followFocus");
 		helpKeyCode = uidl.getIntAttribute("helpKey");
-		hideOnBlur  = uidl.getBooleanAttribute("hideOnBlur");
+		hideOnBlur = uidl.getBooleanAttribute("hideOnBlur");
 
 		hidden = uidl.getBooleanVariable("hidden");
 
@@ -145,7 +146,8 @@ public class VContextHelp extends HTML implements Paintable,
 
 	public void onPreviewNativeEvent(NativePreviewEvent event) {
 		// Hide if the element has disappeared (views changed)
-		if (!hideOnBlur && !bubble.helpElement.hasParentElement()) {
+		if (shouldHideBubble(event)) {
+			VConsole.log("onPreviewNativeEvent");
 			closeBubble();
 		}
 		if (!isAttached()) {
@@ -159,10 +161,25 @@ public class VContextHelp extends HTML implements Paintable,
 			if (isHelpKeyPressed(event)) {
 				openBubble();
 				event.cancel();
-			} else if (hideOnBlur && isKeyDownOrClick(event) && bubble.isShowing()) {
+			} else if (hideOnBlur && isKeyDownOrClick(event)
+					&& bubble.isShowing()) {
 				closeBubble();
 			}
 		}
+	}
+
+	private boolean shouldHideBubble(NativePreviewEvent event) {
+		if (!hideOnBlur && bubble.helpElement != null) {
+			return bubble.helpElement.getAbsoluteLeft() < 0
+					|| bubble.helpElement.getAbsoluteTop() < 0
+					|| !Document.get().getBody()
+							.isOrHasChild(bubble.helpElement)
+					|| "hidden".equalsIgnoreCase(bubble.helpElement.getStyle()
+							.getVisibility())
+					|| "none".equalsIgnoreCase(bubble.helpElement.getStyle()
+							.getDisplay());
+		}
+		return false;
 	}
 
 	private void openBubble() {
