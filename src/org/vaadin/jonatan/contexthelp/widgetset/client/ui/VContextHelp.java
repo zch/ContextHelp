@@ -116,12 +116,15 @@ public class VContextHelp extends HTML implements Paintable,
 
 		// Save the UIDL identifier for the component
 		uidlId = uidl.getId();
+		
 
 		followFocus = uidl.getBooleanAttribute("followFocus");
 		helpKeyCode = uidl.getIntAttribute("helpKey");
 		hideOnBlur = uidl.getBooleanAttribute("hideOnBlur");
 
 		hidden = uidl.getBooleanVariable("hidden");
+
+		bubble.updateStyleNames(uidl.getStringAttribute("style"));
 
 		final String helpText = uidl.getStringAttribute("helpText");
 		if (!hidden && helpText != null) {
@@ -291,7 +294,7 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private class HelpBubble extends VOverlay {
 		private static final int Z_INDEX_BASE = 90000;
-
+		
 		private HTML helpHtml = new HTML();
 
 		private Element helpElement;
@@ -308,6 +311,23 @@ public class VContextHelp extends HTML implements Paintable,
 			setWidget(helpHtml);
 			// Make sure we are hidden
 			hide();
+		}
+
+		public void updateStyleNames(String styleNames) {
+			StringBuffer styleBuf = new StringBuffer();
+			// Copied from ApplicationConnection.updateComponent
+	        if (styleNames != null && !"".equals(styleNames)) {
+	            final String[] styles = styleNames.split(" ");
+	            for (int i = 0; i < styles.length; i++) {
+	                styleBuf.append(" ");
+	                styleBuf.append(CLASSNAME + "-bubble");
+	                styleBuf.append("-");
+	                styleBuf.append(styles[i]);
+	                styleBuf.append(" ");
+	                styleBuf.append(styles[i]);
+	            }
+	        }
+	        addStyleName(styleBuf.toString());
 		}
 
 		public void setHelpText(String helpText) {
