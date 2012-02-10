@@ -81,6 +81,8 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private int helpKeyCode = 112; // F1 by default
 
+	private boolean hideOnBlur = true;
+
 	/**
 	 * The constructor should first call super() to initialize the component and
 	 * then handle any initialization relevant to Vaadin.
@@ -116,6 +118,7 @@ public class VContextHelp extends HTML implements Paintable,
 
 		followFocus = uidl.getBooleanAttribute("followFocus");
 		helpKeyCode = uidl.getIntAttribute("helpKey");
+		hideOnBlur  = uidl.getBooleanAttribute("hideOnBlur");
 
 		hidden = uidl.getBooleanVariable("hidden");
 
@@ -141,6 +144,10 @@ public class VContextHelp extends HTML implements Paintable,
 	}
 
 	public void onPreviewNativeEvent(NativePreviewEvent event) {
+		// Hide if the element has disappeared (views changed)
+		if (!hideOnBlur && !bubble.helpElement.hasParentElement()) {
+			closeBubble();
+		}
 		if (!isAttached()) {
 			return;
 		}
@@ -152,7 +159,7 @@ public class VContextHelp extends HTML implements Paintable,
 			if (isHelpKeyPressed(event)) {
 				openBubble();
 				event.cancel();
-			} else if (isKeyDownOrClick(event) && bubble.isShowing()) {
+			} else if (hideOnBlur && isKeyDownOrClick(event) && bubble.isShowing()) {
 				closeBubble();
 			}
 		}

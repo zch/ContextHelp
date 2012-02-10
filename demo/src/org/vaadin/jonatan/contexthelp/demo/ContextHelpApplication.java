@@ -44,6 +44,7 @@ public class ContextHelpApplication extends Application implements TransactionLi
 		tabs.addTab(new PlacementDemo(), "Placement", null);
 		tabs.addTab(new HelpKey(), "Configure the help key", null);
 //		tabs.addTab(new CodeSamples(), "Code examples", null);
+		tabs.addTab(new ProgrammaticControl(), "Programmatic control", null);
 		mainWindow.addComponent(tabs);
 
 		setMainWindow(mainWindow);

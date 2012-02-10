@@ -33,6 +33,8 @@ public class ContextHelp extends AbstractComponent {
 
 	private HelpProvider helpProvider;
 
+	private boolean hideOnBlur = true;
+
 	public ContextHelp() {
 		helpProvider = new DefaultHelpProvider();
 	}
@@ -63,6 +65,7 @@ public class ContextHelp extends AbstractComponent {
 		}
 		target.addAttribute("followFocus", followFocus);
 		target.addAttribute("helpKey", helpKey);
+		target.addAttribute("hideOnBlur", hideOnBlur);
 	}
 
 	/**
@@ -121,6 +124,12 @@ public class ContextHelp extends AbstractComponent {
 			hidden = false;
 			requestRepaint();
 		}
+	}
+	
+	public void hideHelp() {
+		selectedComponentId = null;
+		hidden = true;
+		requestRepaint();
 	}
 
 	/**
@@ -182,5 +191,13 @@ public class ContextHelp extends AbstractComponent {
 	 */
 	public int getHelpKey() {
 		return helpKey;
+	}
+
+	public boolean isHideOnBlur() {
+		return hideOnBlur;
+	}
+
+	public void setHideOnBlur(boolean hideOnBlur) {
+		this.hideOnBlur = hideOnBlur;
 	}
 }
