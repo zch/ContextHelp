@@ -217,4 +217,23 @@ public class ContextHelp extends AbstractComponent {
 	public void setHideOnBlur(boolean hideOnBlur) {
 		this.hideOnBlur = hideOnBlur;
 	}
+
+	/**
+	 * Sets the {@link HelpProvider} to be used for looking up help texts for
+	 * components. By default the {@link DefaultHelpProvider} is used.
+	 * 
+	 * @param helpProvider
+	 *            the HelpProvider.
+	 */
+	public void setHelpProvider(HelpProvider helpProvider) {
+		this.helpProvider = helpProvider;
+	}
+
+	/**
+	 * @return The HelpProvider instance that is used for looking up help text
+	 *         for components.
+	 */
+	public HelpProvider getHelpProvider() {
+		return helpProvider;
+	}
 }
