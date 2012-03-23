@@ -74,6 +74,9 @@ public class ContextHelp extends AbstractComponent {
 	 * also possible to provide classnames for elements in the HTML and provide
 	 * the CSS rules in the Vaadin theme.
 	 * 
+	 * Note that if this method is to be used only if you do not use a custom
+	 * {@link HelpProvider}.
+	 * 
 	 * @param component
 	 *            the component for which to register the help text.
 	 * @param help
@@ -94,6 +97,9 @@ public class ContextHelp extends AbstractComponent {
 	 * format and can be formatted as such and styled with inline CSS. It is
 	 * also possible to provide classnames for elements in the HTML and provide
 	 * the CSS rules in the Vaadin theme.
+	 * 
+	 * Note that if this method is to be used only if you do not use a custom
+	 * {@link HelpProvider}.
 	 * 
 	 * @param component
 	 *            the component for which to register the help text.
@@ -163,6 +169,9 @@ public class ContextHelp extends AbstractComponent {
 	 * is to place the help bubble to the right of components and if it doesn't
 	 * fit there, ContextHelp attempts to place it below followed by above the
 	 * component.
+	 * 
+	 * Note that if this method is to be used only if you do not use a custom
+	 * {@link HelpProvider}.
 	 * 
 	 * @param component
 	 *            the component for which to define the placement of the help
