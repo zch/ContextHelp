@@ -4,6 +4,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -116,7 +117,6 @@ public class VContextHelp extends HTML implements Paintable,
 
 		// Save the UIDL identifier for the component
 		uidlId = uidl.getId();
-		
 
 		followFocus = uidl.getBooleanAttribute("followFocus");
 		helpKeyCode = uidl.getIntAttribute("helpKey");
@@ -164,11 +164,22 @@ public class VContextHelp extends HTML implements Paintable,
 			if (isHelpKeyPressed(event)) {
 				openBubble();
 				event.cancel();
-			} else if (hideOnBlur && isKeyDownOrClick(event)
-					&& bubble.isShowing()) {
+			} else if (shouldHideOnEvent(event)) {
 				closeBubble();
 			}
 		}
+	}
+
+	private boolean shouldHideOnEvent(NativePreviewEvent event) {
+		Element targetElement = null;
+		EventTarget target = event.getNativeEvent().getEventTarget();
+		if (Element.is(target)) {
+			targetElement = Element.as(target);
+		}
+		return hideOnBlur && isKeyDownOrClick(event) && bubble.isShowing()
+				&& targetElement != null
+				&& !bubble.getElement().isOrHasChild(targetElement)
+				&& !bubble.helpElement.isOrHasChild(targetElement);
 	}
 
 	private boolean shouldHideBubble(NativePreviewEvent event) {
@@ -297,7 +308,7 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private class HelpBubble extends VOverlay {
 		private static final int Z_INDEX_BASE = 90000;
-		
+
 		private HTML helpHtml = new HTML();
 
 		private Element helpElement;
@@ -319,18 +330,18 @@ public class VContextHelp extends HTML implements Paintable,
 		public void updateStyleNames(String styleNames) {
 			StringBuffer styleBuf = new StringBuffer();
 			// Copied from ApplicationConnection.updateComponent
-	        if (styleNames != null && !"".equals(styleNames)) {
-	            final String[] styles = styleNames.split(" ");
-	            for (int i = 0; i < styles.length; i++) {
-	                styleBuf.append(" ");
-	                styleBuf.append(CLASSNAME + "-bubble");
-	                styleBuf.append("-");
-	                styleBuf.append(styles[i]);
-	                styleBuf.append(" ");
-	                styleBuf.append(styles[i]);
-	            }
-	            addStyleName(styleBuf.toString());
-	        }
+			if (styleNames != null && !"".equals(styleNames)) {
+				final String[] styles = styleNames.split(" ");
+				for (int i = 0; i < styles.length; i++) {
+					styleBuf.append(" ");
+					styleBuf.append(CLASSNAME + "-bubble");
+					styleBuf.append("-");
+					styleBuf.append(styles[i]);
+					styleBuf.append(" ");
+					styleBuf.append(styles[i]);
+				}
+				addStyleName(styleBuf.toString());
+			}
 		}
 
 		public void setHelpText(String helpText) {
