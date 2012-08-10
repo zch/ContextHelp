@@ -275,8 +275,11 @@ public class VContextHelp extends HTML implements Paintable,
 
 	private void updateServersideState(boolean immediate) {
 		if (isAttached()) {
-			client.updateVariable(uidlId, "selectedComponentId",
-					getHelpElement().getId(), false);
+			Element helpElement = getHelpElement();
+			if (helpElement != null) {
+				client.updateVariable(uidlId, "selectedComponentId",
+						helpElement.getId(), false);
+			}
 			client.updateVariable(uidlId, "hidden", hidden, immediate);
 		}
 	}
