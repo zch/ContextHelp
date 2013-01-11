@@ -1,4 +1,4 @@
-WebContent/VAADIN/widgetsets/*
+src/main/webapp/VAADIN/widgetsets/*
 build/classes/*
 build/result/*
 build/lib/gwt*
@@ -6,3 +6,4 @@ build/lib/gwt*
 .classpath
 .project
 .settings/*
+target/*
