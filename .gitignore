@@ -1,9 +1,8 @@
-src/main/webapp/VAADIN/widgetsets/*
-build/classes/*
-build/result/*
-build/lib/gwt*
+*/src/main/webapp/VAADIN/widgetsets/*
 .DS_Store
 .classpath
 .project
 .settings/*
-target/*
+*/target/*
+.idea
+*.iml
