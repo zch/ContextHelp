@@ -52,14 +52,14 @@ public class WrappedFields extends Form {
 			}
 			if (f != null) {
 				return new HelpFieldWrapper(f,
-						ContextHelpApplication.getContextHelp());
+						ContextHelpDemoUI.getContextHelp());
 			}
 			return null;
 		}
 	}
 
 	public WrappedFields() {
-		ContextHelp contextHelp = ContextHelpApplication.getContextHelp();
+		ContextHelp contextHelp = ContextHelpDemoUI.getContextHelp();
 		contextHelp.addHelpForComponent(companyField, companyHelp);
 		contextHelp.addHelpForComponent(nameField, nameHelp);
 		contextHelp.addHelpForComponent(streetField, streetHelp);

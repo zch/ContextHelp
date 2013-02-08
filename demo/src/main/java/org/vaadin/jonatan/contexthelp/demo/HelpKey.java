@@ -22,7 +22,7 @@ public class HelpKey extends VerticalLayout implements
 			e.printStackTrace();
 		}
 		TextField tf = new TextField("Type the key here");
-		ContextHelpApplication
+		ContextHelpDemoUI
 				.getContextHelp()
 				.addHelpForComponent(
 						tf,
@@ -46,7 +46,7 @@ public class HelpKey extends VerticalLayout implements
 			item.getItemProperty("caption").setValue(formatName(f.getName()));
 		}
 
-		ContextHelpApplication.getContextHelp().addHelpForComponent(keyCodeBox,
+		ContextHelpDemoUI.getContextHelp().addHelpForComponent(keyCodeBox,
 				"Select the key that opens this help bubble");
 
 		keyCodeBox.select(KeyCode.F1);
@@ -59,7 +59,7 @@ public class HelpKey extends VerticalLayout implements
 	}
 
 	public void valueChange(ValueChangeEvent event) {
-		ContextHelpApplication.getContextHelp().setHelpKey(
+		ContextHelpDemoUI.getContextHelp().setHelpKey(
 				(Integer) event.getProperty().getValue());
 	}
 }

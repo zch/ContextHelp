@@ -17,7 +17,7 @@ public class ProgrammaticControl extends VerticalLayout {
 		setSizeFull();
 
 		addComponent(field);
-		final ContextHelp contextHelp = ContextHelpApplication.getContextHelp();
+		final ContextHelp contextHelp = ContextHelpDemoUI.getContextHelp();
 		contextHelp.addHelpForComponent(field, fieldHelp);
 
 		addComponent(new Button("Toggle help", new Button.ClickListener() {

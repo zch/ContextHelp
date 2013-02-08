@@ -48,7 +48,7 @@ public class AddressForm extends Form {
 	}
 
 	public AddressForm() {
-		ContextHelp contextHelp = ContextHelpApplication.getContextHelp();
+		ContextHelp contextHelp = ContextHelpDemoUI.getContextHelp();
 		contextHelp.addHelpForComponent(companyField, companyHelp);
 		contextHelp.addHelpForComponent(nameField, nameHelp);
 		contextHelp.addHelpForComponent(streetField, streetHelp);
