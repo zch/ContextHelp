@@ -41,9 +41,5 @@
 			<outputDirectory>META-INF</outputDirectory>
 			<filtered>true</filtered>
 		</file>
-		<file>
-			<source>README</source>
-			<filtered>true</filtered>
-		</file>
 	</files>
 </assembly>

@@ -8,7 +8,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.vaadin.jonatan.contexthelp.ContextHelp;
 
-public class ContextHelpApplication extends UI {
+public class ContextHelpDemoUI extends UI {
     private static final long serialVersionUID = 1L;
 
     final ContextHelp contextHelp = new ContextHelp();
@@ -44,6 +44,6 @@ public class ContextHelpApplication extends UI {
     }
 
     public static ContextHelp getContextHelp() {
-        return ((ContextHelpApplication) getCurrent()).contextHelp;
+        return ((ContextHelpDemoUI) getCurrent()).contextHelp;
     }
 }

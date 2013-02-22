@@ -1,9 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.vaadin.jonatan</groupId>
+        <artifactId>contexthelp-modules</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.vaadin.jonatan</groupId>
     <artifactId>contexthelp-demo</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
     <name>ContextHelp Demo</name>
     <packaging>war</packaging>
 
@@ -24,17 +27,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version.maven>7.0.0</vaadin.version.maven>
+        <vaadin.version.maven>7.0.1</vaadin.version.maven>
         <snapshot.repository.url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</snapshot.repository.url>
     </properties>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>vaadin-snapshots</id>
-            <name>Vaadin snapshot repository</name>
-            <url>${snapshot.repository.url}</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <!--<distributionManagement>-->
+        <!--<repository>-->
+            <!--<id>virtuallypreinstalled-scp</id>-->
+            <!--<url>scpexe://dev@virtuallypreinstalled.com:5110/home/dev/mavendeploys</url>-->
+        <!--</repository>-->
+    <!--</distributionManagement>-->
 
     <licenses>
         <license>
@@ -54,6 +56,15 @@
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
+
+        <extensions>
+            <!-- Enabling the use of FTP -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>2.4</version>
+            </extension>
+        </extensions>
 
         <plugins>
             <plugin>
@@ -82,6 +93,9 @@
                         <resource>
                             <!-- this is relative to the pom.xml directory -->
                             <directory>${basedir}/target/testwebapp</directory>
+                            <excludes>
+                                <exclude>VAADIN/gwt-unitCache/**</exclude>
+                            </excludes>
                         </resource>
                     </webResources>
                 </configuration>
@@ -115,6 +129,49 @@
                         </baseResource>
                     </webApp>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-beta-4</version>
+                <configuration>
+                    <fromFile>${project.build.directory}/${project.build.finalName}.war</fromFile>
+                    <url>scpexe://dev@virtuallypreinstalled.com:5110/home/dev</url>
+                    <toFile>ContextHelp.war</toFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>upload-war-to-server</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload-single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipTests}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 
