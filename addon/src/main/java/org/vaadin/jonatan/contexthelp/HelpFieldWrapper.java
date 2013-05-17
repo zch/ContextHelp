@@ -33,8 +33,9 @@ public class HelpFieldWrapper<T> extends CustomComponent implements Field<T>,
 		layout = new CssLayout();
 		layout.addComponent(field);
 
-		helpButton = new Button("", (ClickListener) this);
-		helpButton.setIcon(new ThemeResource("../runo/icons/16/help.png"));
+		helpButton = new Button("&nbsp;");
+//        helpButton.setIcon(new ThemeResource("../runo/icons/16/help.png"));
+        helpButton.addClickListener(this);
 		helpButton.setStyleName(Reindeer.BUTTON_LINK);
 		helpButton.addStyleName("context-help");
 		layout.addComponent(helpButton);

@@ -1,6 +1,11 @@
 package org.vaadin.jonatan.contexthelp.widgetset.client.ui;
 
-import com.google.gwt.dom.client.*;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
@@ -12,9 +17,13 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTML;
-import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.VOverlay;
-import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpEvent.*;
+import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpEvent.BubbleHiddenEvent;
+import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpEvent.BubbleHiddenHandler;
+import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpEvent.BubbleMovedEvent;
+import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpEvent.BubbleMovedHandler;
+import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpEvent.BubbleShownEvent;
+import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpEvent.BubbleShownHandler;
 
 public class VContextHelp implements NativePreviewHandler, HasHandlers {
 
@@ -178,10 +187,10 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
 
     public native void suppressHelpForIE()
     /*-{
-		$doc.onhelp = function() {
-			return false;
-		}
-	}-*/;
+        $doc.onhelp = function () {
+            return false;
+        }
+    }-*/;
 
     private Element findHelpElement(String id) {
         if (id == null || id.length() == 0) {
@@ -214,9 +223,9 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
     }
 
     public static native Element getFocusedElement()
-	/*-{
-		return $doc.activeElement;
-	}-*/;
+    /*-{
+        return $doc.activeElement;
+    }-*/;
 
     private Element getHelpElement() {
         Element focused = getFocusedElement();

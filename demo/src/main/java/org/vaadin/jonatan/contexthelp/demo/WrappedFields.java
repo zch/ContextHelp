@@ -51,6 +51,7 @@ public class WrappedFields extends Form {
 				f = dobField;
 			}
 			if (f != null) {
+                f.setId("wrapped." + propertyId);
 				return new HelpFieldWrapper(f,
 						ContextHelpDemoUI.getContextHelp());
 			}

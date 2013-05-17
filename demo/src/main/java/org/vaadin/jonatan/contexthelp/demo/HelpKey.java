@@ -22,6 +22,7 @@ public class HelpKey extends VerticalLayout implements
 			e.printStackTrace();
 		}
 		TextField tf = new TextField("Type the key here");
+        tf.setId("configure.textfield");
 		ContextHelpDemoUI
 				.getContextHelp()
 				.addHelpForComponent(

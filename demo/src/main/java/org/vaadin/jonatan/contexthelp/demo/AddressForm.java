@@ -48,17 +48,22 @@ public class AddressForm extends Form {
 	}
 
 	public AddressForm() {
+        companyField.setId("address.company");
+        nameField.setId("address.name");
+        streetField.setId("address.street");
+        postalCodeField.setId("address.postalCode");
+        countryField.setId("address.country");
+		companyField.setNullRepresentation("");
+		nameField.setNullRepresentation("");
+		streetField.setNullRepresentation("");
+		postalCodeField.setNullRepresentation("");
+		countryField.setNullRepresentation("");
 		ContextHelp contextHelp = ContextHelpDemoUI.getContextHelp();
 		contextHelp.addHelpForComponent(companyField, companyHelp);
 		contextHelp.addHelpForComponent(nameField, nameHelp);
 		contextHelp.addHelpForComponent(streetField, streetHelp);
 		contextHelp.addHelpForComponent(postalCodeField, postalCodeHelp);
 		contextHelp.addHelpForComponent(countryField, countryHelp);
-		companyField.setNullRepresentation("");
-		nameField.setNullRepresentation("");
-		streetField.setNullRepresentation("");
-		postalCodeField.setNullRepresentation("");
-		countryField.setNullRepresentation("");
 
 		Address address = new Address();
 		BeanItem<Address> item = new BeanItem<Address>(address);

@@ -3,6 +3,7 @@ package org.vaadin.jonatan.contexthelp;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.UI;
 import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpServerRpc;
 import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpState;
@@ -113,8 +114,15 @@ public class ContextHelp extends AbstractExtension {
 	 */
 	public void showHelpFor(Component component) {
 		if (component.getId() != null) {
+            if (component instanceof Field) {
+                ((Field)component).focus();
+            }
 			getState().selectedComponentId = component.getId();
 			getState().hidden = false;
+            String helpHTML = helpProvider.getHtmlForId(component.getId());
+            if (helpHTML != null) {
+                getState().helpHTML = helpHTML;
+            }
 		}
 	}
 

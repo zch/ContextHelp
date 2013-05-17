@@ -16,6 +16,7 @@ public class ProgrammaticControl extends VerticalLayout {
 	public ProgrammaticControl() {
 		setSizeFull();
 
+        field.setId("programmatic.textfield");
 		addComponent(field);
 		final ContextHelp contextHelp = ContextHelpDemoUI.getContextHelp();
 		contextHelp.addHelpForComponent(field, fieldHelp);

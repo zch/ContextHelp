@@ -44,6 +44,12 @@
 	font-size: 11pt;
 }
 
-.v-button-context-help {
-	padding-left: 0.5em;
+.v-button.v-button-link.v-button-context-help,
+.v-button.v-button-link.v-button-context-help.v-pressed {
+	margin-left: 0.5em;
+    background: url(images/info.png) no-repeat 50% 50%;
+    background-size: 1em 1em;
+    cursor: hand;
+    height: 2em;
+    width: 1em;
 }
