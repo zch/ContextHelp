@@ -353,7 +353,7 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
                 finalPlacement = findDefaultPlacement();
             }
             updatePopupStyleForPlacement(finalPlacement);
-            setPopupPosition(getLeft(finalPlacement), getTop(finalPlacement));
+            setPopupPosition(Math.max(0, getLeft(finalPlacement)), Math.max(0, getTop(finalPlacement)));
         }
 
         private Placement findDefaultPlacement() {
