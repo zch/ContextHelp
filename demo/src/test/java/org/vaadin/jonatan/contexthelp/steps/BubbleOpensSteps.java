@@ -10,6 +10,7 @@ import cucumber.api.java.en.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.PageFactory;
@@ -31,8 +32,8 @@ public class BubbleOpensSteps extends TestBenchTestCase {
 
     @Before
     public void beforeScenario() {
-//        setDriver(TestBench.createDriver(new PhantomJSDriver(DesiredCapabilities.phantomjs())));
-        setDriver(TestBench.createDriver(new ChromeDriver()));
+        setDriver(TestBench.createDriver(new PhantomJSDriver(DesiredCapabilities.phantomjs())));
+//        setDriver(TestBench.createDriver(new FirefoxDriver()));
         demoPage = PageFactory.initElements(getDriver(), DemoPage.class);
         bubble = PageFactory.initElements(getDriver(), BubblePage.class);
     }

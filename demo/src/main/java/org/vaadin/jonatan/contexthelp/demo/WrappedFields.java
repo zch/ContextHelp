@@ -1,6 +1,7 @@
 package org.vaadin.jonatan.contexthelp.demo;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.vaadin.jonatan.contexthelp.ContextHelp;
 import org.vaadin.jonatan.contexthelp.HelpFieldWrapper;
@@ -13,6 +14,8 @@ import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.TextField;
+import org.vaadin.jonatan.contexthelp.HelpProvider;
+import org.vaadin.jonatan.contexthelp.widgetset.client.ui.Placement;
 
 @SuppressWarnings("serial")
 public class WrappedFields extends Form {
@@ -51,7 +54,6 @@ public class WrappedFields extends Form {
 				f = dobField;
 			}
 			if (f != null) {
-                f.setId("wrapped." + propertyId);
 				return new HelpFieldWrapper(f,
 						ContextHelpDemoUI.getContextHelp());
 			}
@@ -60,18 +62,26 @@ public class WrappedFields extends Form {
 	}
 
 	public WrappedFields() {
-		ContextHelp contextHelp = ContextHelpDemoUI.getContextHelp();
+        // Set custom IDs to allow for easier TestBench testing
+        companyField.setId("wrapped.company");
+        nameField.setId("wrapped.name");
+        streetField.setId("wrapped.street");
+        postalCodeField.setId("wrapped.postalCode");
+        countryField.setId("wrapped.country");
+
+		companyField.setNullRepresentation("");
+		nameField.setNullRepresentation("");
+		streetField.setNullRepresentation("");
+		postalCodeField.setNullRepresentation("");
+		countryField.setNullRepresentation("");
+
+        ContextHelp contextHelp = ContextHelpDemoUI.getContextHelp();
 		contextHelp.addHelpForComponent(companyField, companyHelp);
 		contextHelp.addHelpForComponent(nameField, nameHelp);
 		contextHelp.addHelpForComponent(streetField, streetHelp);
 		contextHelp.addHelpForComponent(postalCodeField, postalCodeHelp);
 		contextHelp.addHelpForComponent(countryField, countryHelp);
 		contextHelp.addHelpForComponent(dobField, dobHelp);
-		companyField.setNullRepresentation("");
-		nameField.setNullRepresentation("");
-		streetField.setNullRepresentation("");
-		postalCodeField.setNullRepresentation("");
-		countryField.setNullRepresentation("");
 
 		Address address = new Address();
 		BeanItem<Address> item = new BeanItem<Address>(address);

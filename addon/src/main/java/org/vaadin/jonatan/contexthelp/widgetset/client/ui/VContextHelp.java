@@ -133,7 +133,7 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
     }
 
     private boolean shouldHideBubble() {
-        if (!hideOnBlur && bubble.helpElement != null) {
+        if (!hideOnBlur && bubble != null && bubble.helpElement != null) {
             return bubble.helpElement.getAbsoluteLeft() < 0
                     || bubble.helpElement.getAbsoluteTop() < 0
                     || !Document.get().getBody().isOrHasChild(bubble.helpElement)
@@ -278,7 +278,7 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
     private class HelpBubble extends VOverlay {
         private static final int Z_INDEX_BASE = 90000;
 
-        private HTML helpHtml = new HTML();
+        private final HTML helpHtml;
 
         private Element helpElement;
 
@@ -291,6 +291,7 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
             super(false, false, false); // autoHide, modal, dropshadow
             setStylePrimaryName(CLASSNAME + "-bubble");
             setZIndex(Z_INDEX_BASE);
+            helpHtml = new HTML();
             setWidget(helpHtml);
             // Make sure we are hidden (bypassing event triggering)
             super.hide();
@@ -320,10 +321,10 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
 
         public void showHelpBubble(String componentId, String helpText, Placement placement) {
             this.placement = placement;
-            setHelpText(helpText);
             helpElement = findHelpElement(componentId);
             if (helpElement != null) {
                 show();
+                setHelpText(helpText);
                 calculateAndSetPopupPosition();
             }
             fireBubbleShownEvent(componentId, helpText);

@@ -48,16 +48,19 @@ public class AddressForm extends Form {
 	}
 
 	public AddressForm() {
+        // Set custom IDs to allow for easier TestBench testing
         companyField.setId("address.company");
         nameField.setId("address.name");
         streetField.setId("address.street");
         postalCodeField.setId("address.postalCode");
         countryField.setId("address.country");
+
 		companyField.setNullRepresentation("");
 		nameField.setNullRepresentation("");
 		streetField.setNullRepresentation("");
 		postalCodeField.setNullRepresentation("");
 		countryField.setNullRepresentation("");
+
 		ContextHelp contextHelp = ContextHelpDemoUI.getContextHelp();
 		contextHelp.addHelpForComponent(companyField, companyHelp);
 		contextHelp.addHelpForComponent(nameField, nameHelp);

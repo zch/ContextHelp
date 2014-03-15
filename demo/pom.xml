@@ -24,7 +24,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version.maven>7.1.0.beta1</vaadin.version.maven>
+        <vaadin.version.maven>7.2-SNAPSHOT</vaadin.version.maven>
         <snapshot.repository.url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</snapshot.repository.url>
     </properties>
 
@@ -186,7 +186,7 @@
                         <noServer>true</noServer>
                         <runTarget>http://localhost:9998/</runTarget>
                         <draftCompile>true</draftCompile>
-                        <style>OBF</style>
+                        <style>PRETTY</style>
                         <module>org.vaadin.jonatan.contexthelp.widgetset.ContexthelpWidgetset</module>
                         <strict>true</strict>
                     </configuration>
@@ -295,7 +295,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-testbench</artifactId>
-            <version>3.1.0</version>
+            <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

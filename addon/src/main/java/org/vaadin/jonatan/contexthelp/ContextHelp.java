@@ -113,16 +113,18 @@ public class ContextHelp extends AbstractExtension {
 	 *            the component for which to show the help bubble.
 	 */
 	public void showHelpFor(Component component) {
-		if (component.getId() != null) {
+        if (component.getId() != null) {
             if (component instanceof Field) {
                 ((Field)component).focus();
             }
 			getState().selectedComponentId = component.getId();
-			getState().hidden = false;
             String helpHTML = helpProvider.getHtmlForId(component.getId());
             if (helpHTML != null) {
                 getState().helpHTML = helpHTML;
             }
+            Placement placement = helpProvider.getPlacementForId(component.getId());
+            getState().placement = placement == null ? Placement.AUTO : placement;
+			getState().hidden = false;
 		}
 	}
 
