@@ -24,7 +24,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version.maven>7.1.12</vaadin.version.maven>
+        <vaadin.version.maven>7.4.3</vaadin.version.maven>
         <snapshot.repository.url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/
         </snapshot.repository.url>
     </properties>
@@ -193,7 +193,7 @@
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>7.2.2.v20101205</version>
+                <version>8.1.12.v20130726</version>
                 <configuration>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <stopPort>9995</stopPort>
@@ -327,7 +327,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
-            <version>7.2.2.v20101205</version>
+            <version>8.1.12.v20130726</version>
             <scope>test</scope>
         </dependency>
         <dependency>

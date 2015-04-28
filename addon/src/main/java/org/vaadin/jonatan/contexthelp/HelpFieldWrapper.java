@@ -213,4 +213,14 @@ public class HelpFieldWrapper<T> extends CustomComponent implements Field<T>,
 	public void removeValueChangeListener(ValueChangeListener listener) {
 		field.removeValueChangeListener(listener);
 	}
+
+    @Override
+    public boolean isEmpty() {
+        return field.isEmpty();
+    }
+
+    @Override
+    public void clear() {
+        field.clear();
+    }
 }
