@@ -40,16 +40,14 @@ public class ContextHelpConnector extends AbstractExtensionConnector implements 
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
-        for (String prop : stateChangeEvent.getChangedProperties()) {
-            if ("hidden".equals(prop)) {
-                contextHelp.setHidden(getState().hidden);
-            } else if ("followFocus".equals(prop)) {
-                contextHelp.setFollowFocus(getState().followFocus);
-            } else if ("helpKey".equals(prop)) {
-                contextHelp.setHelpKeyCode(getState().helpKey);
-            } else if ("hideOnBlur".equals(prop)) {
-                contextHelp.setHideOnBlur(getState().hideOnBlur);
-            }
+        if (stateChangeEvent.hasPropertyChanged("hidden")) {
+            contextHelp.setHidden(getState().hidden);
+        } else if (stateChangeEvent.hasPropertyChanged("followFocus")) {
+            contextHelp.setFollowFocus(getState().followFocus);
+        } else if (stateChangeEvent.hasPropertyChanged("helpKey")) {
+            contextHelp.setHelpKeyCode(getState().helpKey);
+        } else if (stateChangeEvent.hasPropertyChanged("hideOnBlur")) {
+            contextHelp.setHideOnBlur(getState().hideOnBlur);
         }
         if (!getState().hidden && getState().helpHTML != null) {
             showHelpBubbleDeferred();
