@@ -15,7 +15,6 @@ public class GeneralHelp extends CustomComponent {
         panel.setContent(layout);
 
         TextField field = new TextField("Focus me and hit F1");
-        field.setId("general.help.field");
         layout.addComponent(field);
         ContextHelpDemoUI.getContextHelp().addHelpForComponent(panel,
                 "<h2><span style='color:red;'>Hello</span> from the panel!</h2>");

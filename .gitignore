@@ -9,3 +9,4 @@
 chromedriver.log
 target/*
 phantomjsdriver.log
+demo/src/main/webapp/VAADIN/themes/demo-theme/styles.scss.cache

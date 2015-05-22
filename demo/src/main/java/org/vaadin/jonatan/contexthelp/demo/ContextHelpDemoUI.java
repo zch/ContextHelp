@@ -1,5 +1,6 @@
 package org.vaadin.jonatan.contexthelp.demo;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.CheckBox;
@@ -8,6 +9,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.vaadin.jonatan.contexthelp.ContextHelp;
 
+@Theme("demo-theme")
 public class ContextHelpDemoUI extends UI {
     private static final long serialVersionUID = 1L;
 
@@ -18,6 +20,7 @@ public class ContextHelpDemoUI extends UI {
         contextHelp.extend(this);
 
         VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setMargin(true);
         setCurrent(this);
 
         CheckBox followFocus = new CheckBox("Make the help bubble follow focus");

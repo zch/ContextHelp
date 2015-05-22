@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -33,11 +34,10 @@ public class HelpFieldWrapper<T> extends CustomComponent implements Field<T>,
 		layout = new CssLayout();
 		layout.addComponent(field);
 
-		helpButton = new Button("&nbsp;");
+		helpButton = new Button(FontAwesome.INFO_CIRCLE);
         helpButton.setHtmlContentAllowed(true);
         helpButton.addClickListener(this);
 		helpButton.setStyleName(Reindeer.BUTTON_LINK);
-		helpButton.addStyleName("context-help");
 		layout.addComponent(helpButton);
 
 		setCaption(field.getCaption());

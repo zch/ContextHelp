@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.jonatan</groupId>
     <artifactId>contexthelp</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
     <name>ContextHelp</name>
     <packaging>jar</packaging>
 
@@ -45,6 +45,12 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/webapp</directory>
+                <includes>
+                    <include>VAADIN/**</include>
+                </includes>
             </resource>
         </resources>
 
@@ -94,6 +100,7 @@
                             <!-- Comma-separated list of widgetsets in the package -->
                             <Vaadin-Widgetsets>org.vaadin.jonatan.contexthelp.widgetset.ContexthelpWidgetset
                             </Vaadin-Widgetsets>
+                            <Vaadin-Stylesheets>VAADIN/addons/contexthelp/contexthelp.scss</Vaadin-Stylesheets>
                         </manifestEntries>
                     </archive>
                 </configuration>

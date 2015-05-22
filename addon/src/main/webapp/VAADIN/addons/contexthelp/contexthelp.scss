@@ -1,0 +1,202 @@
+
+@mixin contexthelp {
+  $contexthelp-bkg: $v-panel-background-color !default;
+  $contexthelp-border: valo-border($strength: 0.8) !default;
+  $contexthelp-border-width: 4px !default;
+  $contexthelp-font-family: $v-font-family !default;
+  $contexthelp-arrow-size: 6px !default;
+  $contexthelp-font-size: 12px !default;
+
+  .v-contexthelp-bubble {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+
+    font-family: $contexthelp-font-family;
+    font-size: $contexthelp-font-size;
+    line-height: normal;
+
+    .popupContent {
+      background-repeat: no-repeat;
+      max-width: 400px;
+    }
+    &.right {
+      margin-left: $contexthelp-arrow-size;
+    }
+    &.right .popupContent:after, &.right .popupContent:before {
+      right: 100%;
+      top: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+      background-color: transparent;
+    }
+
+    &.right .popupContent:after {
+      background-color: transparent;
+      border: $contexthelp-border;
+      border-left-color: transparent;
+      border-top-color: transparent;
+      border-bottom-color: transparent;
+      border-width: $contexthelp-arrow-size - $contexthelp-border-width;
+      margin-top: -($contexthelp-arrow-size - $contexthelp-border-width);
+    }
+    &.right .popupContent:before {
+      background-color: transparent;
+      border: $contexthelp-border;
+      border-left-color: transparent;
+      border-top-color: transparent;
+      border-bottom-color: transparent;
+      border-width: $contexthelp-arrow-size;
+      margin-top: -$contexthelp-arrow-size;
+    }
+
+    &.left {
+      margin-left: -$contexthelp-arrow-size;
+    }
+    &.left .popupContent:after, &.left .popupContent:before {
+      left: 100%;
+      top: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+      background-color: transparent;
+    }
+
+    &.left .popupContent:after {
+      background-color: transparent;
+      border: $contexthelp-border;
+      border-right-color: transparent;
+      border-top-color: transparent;
+      border-bottom-color: transparent;
+      border-width: $contexthelp-arrow-size - $contexthelp-border-width;
+      margin-top: -($contexthelp-arrow-size - $contexthelp-border-width);
+    }
+    &.left .popupContent:before {
+      background-color: transparent;
+      border: $contexthelp-border;
+      border-right-color: transparent;
+      border-top-color: transparent;
+      border-bottom-color: transparent;
+      border-width: $contexthelp-arrow-size;
+      margin-top: -$contexthelp-arrow-size;
+    }
+
+    &.above {
+      margin-top: -$contexthelp-arrow-size;
+    }
+    &.above .popupContent:after, &.above .popupContent:before {
+      top: 100%;
+      left: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+      background-color: transparent;
+    }
+
+    &.above .popupContent:after {
+      background-color: transparent;
+      border: $contexthelp-border;
+      border-right-color: transparent;
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+      border-width: $contexthelp-arrow-size - $contexthelp-border-width;
+      margin-left: -($contexthelp-arrow-size - $contexthelp-border-width);
+    }
+    &.above .popupContent:before {
+      background-color: transparent;
+      border: $contexthelp-border;
+      border-right-color: transparent;
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+      border-width: $contexthelp-arrow-size;
+      margin-left: -$contexthelp-arrow-size;
+    }
+
+    &.below {
+      margin-top: $contexthelp-arrow-size;
+    }
+    &.below .popupContent:after, &.below .popupContent:before {
+      bottom: 100%;
+      left: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+      background-color: transparent;
+    }
+
+    &.below .popupContent:after {
+      background-color: transparent;
+      border: $contexthelp-border;
+      border-right-color: transparent;
+      border-left-color: transparent;
+      border-top-color: transparent;
+      border-width: $contexthelp-arrow-size - $contexthelp-border-width;
+      margin-left: -($contexthelp-arrow-size - $contexthelp-border-width);
+    }
+    &.below .popupContent:before {
+      background-color: transparent;
+      border: $contexthelp-border;
+      border-right-color: transparent;
+      border-left-color: transparent;
+      border-top-color: transparent;
+      border-width: $contexthelp-arrow-size;
+      margin-left: -$contexthelp-arrow-size;
+    }
+
+    .popupContent .helpText {
+      background: $contexthelp-bkg;
+      border: $contexthelp-border;
+      border-width: $contexthelp-border-width;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+      border-radius: 10px;
+      padding: 2em;
+      text-shadow: #FFF 0px 1px 0px;
+      font-size: 11pt;
+    }
+
+    &.right .popupContent .helpText {
+      -moz-box-shadow: 2px 0px 8px #999;
+      -webkit-box-shadow: 2px 0px 8px #999;
+      box-shadow: 2px 0px 8px #999;
+    }
+    &.below .popupContent .helpText {
+      -moz-box-shadow: 0px 2px 8px #999;
+      -webkit-box-shadow: 0px 2px 8px #999;
+      box-shadow: 0px 2px 8px #999;
+    }
+    &.left .popupContent .helpText {
+      -moz-box-shadow: -2px 0px 8px #999;
+      -webkit-box-shadow: -2px 0px 8px #999;
+      box-shadow: -2px 0px 8px #999;
+    }
+    &.above .popupContent .helpText {
+      -moz-box-shadow: 0px -2px 8px #999;
+      -webkit-box-shadow: 0px -2px 8px #999;
+      box-shadow: 0px -2px 8px #999;
+    }
+  }
+
+  .v-button.v-button-link.v-button-context-help,
+  .v-button.v-button-link.v-button-context-help.v-pressed {
+    margin-left: 0.5em;
+    background: url(images/info.png) no-repeat 50% 50%;
+    background-size: 1em 1em;
+    cursor: hand;
+    height: 2em;
+    width: 1em;
+  }
+
+}

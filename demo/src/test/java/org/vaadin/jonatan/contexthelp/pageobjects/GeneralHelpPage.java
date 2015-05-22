@@ -6,7 +6,7 @@ import org.openqa.selenium.support.FindBy;
 
 public class GeneralHelpPage extends AbstractPageObject {
 
-    @FindBy(id="general.help.field")
+    @FindBy(className = "v-textfield")
     private WebElement field;
 
     public GeneralHelpPage(WebDriver driver) {

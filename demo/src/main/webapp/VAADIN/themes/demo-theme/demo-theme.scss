@@ -1,0 +1,14 @@
+
+$menu-background-color: #38414A;
+
+$v-link-font-color: #59ACFF;
+$v-link-text-decoration: none;
+$v-bevel: false;
+$v-shadow: false;
+$v-gradient: false;
+
+@import "../valo/valo.scss";
+
+@mixin demo-theme {
+  @include valo;
+}

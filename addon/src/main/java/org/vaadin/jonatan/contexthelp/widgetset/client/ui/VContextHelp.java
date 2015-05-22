@@ -6,6 +6,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
@@ -17,6 +19,8 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTML;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.Util;
 import com.vaadin.client.ui.VOverlay;
 import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpEvent.BubbleHiddenEvent;
 import org.vaadin.jonatan.contexthelp.widgetset.client.ui.ContextHelpEvent.BubbleHiddenHandler;
@@ -47,13 +51,16 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
     private boolean hideOnBlur = true;
 
     private HandlerManager handlerManager;
+    private ApplicationConnection connection;
+
 
     /**
      * The constructor should first call super() to initialize the component and
      * then handle any initialization relevant to Vaadin.
      */
-    public VContextHelp() {
+    public VContextHelp(ApplicationConnection connection) {
         super();
+        this.connection = connection;
 
         handlerManager = new HandlerManager(this);
 
@@ -289,6 +296,7 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
 
         public HelpBubble() {
             super(false, false, false); // autoHide, modal, dropshadow
+            super.ac = connection;
             setStylePrimaryName(CLASSNAME + "-bubble");
             setZIndex(Z_INDEX_BASE);
             helpHtml = new HTML();
@@ -404,5 +412,14 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
             return 0;
         }
 
+        @Override
+        public void setPopupPosition(int left, int top) {
+            super.setPopupPosition(left, top);
+            // Remove the margin styles, that VOverlay forces on the element,
+            // in order to be able to move the entire bubble with margins.
+            Style style = getElement().getStyle();
+            style.clearMarginLeft();
+            style.clearMarginTop();
+        }
     }
 }

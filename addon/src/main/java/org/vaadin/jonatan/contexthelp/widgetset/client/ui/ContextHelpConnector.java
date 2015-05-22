@@ -21,7 +21,7 @@ public class ContextHelpConnector extends AbstractExtensionConnector implements 
     @Override
     protected void extend(ServerConnector serverConnector) {
         if (contextHelp == null) {
-            contextHelp = new VContextHelp();
+            contextHelp = new VContextHelp(serverConnector.getConnection());
             contextHelp.addBubbleHiddenHandler(this);
             contextHelp.addBubbleMovedHandler(this);
             contextHelp.addBubbleShownHandler(this);
