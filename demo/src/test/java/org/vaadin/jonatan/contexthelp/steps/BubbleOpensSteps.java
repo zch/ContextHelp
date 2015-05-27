@@ -33,7 +33,7 @@ public class BubbleOpensSteps extends TestBenchTestCase {
     @Before
     public void beforeScenario() {
         setDriver(TestBench.createDriver(new PhantomJSDriver(DesiredCapabilities.phantomjs())));
-//        setDriver(TestBench.createDriver(new FirefoxDriver()));
+//        setDriver(TestBench.createDriver(new ChromeDriver()));
         demoPage = PageFactory.initElements(getDriver(), DemoPage.class);
         bubble = PageFactory.initElements(getDriver(), BubblePage.class);
     }

@@ -1,6 +1,8 @@
 package org.vaadin.jonatan.contexthelp.pageobjects;
 
 import com.vaadin.testbench.TestBenchTestCase;
+import com.vaadin.testbench.elements.ButtonElement;
+import com.vaadin.testbench.elements.TabSheetElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -23,7 +25,7 @@ public abstract class AbstractPageObject extends TestBenchTestCase {
 //    }
 
     protected void selectTab(final String tabCaption) {
-        getDriver().findElement(By.xpath("//div[contains(@class, 'v-tabsheet-tabitem')]//div[contains(@class, 'v-captiontext') and text()='" + tabCaption + "']/..")).click();
+        $(TabSheetElement.class).first().openTab(tabCaption);
     }
 
     public void pressKeys(CharSequence keys) {
@@ -31,7 +33,7 @@ public abstract class AbstractPageObject extends TestBenchTestCase {
     }
 
     protected WebElement buttonWithCaption(final String caption) {
-        return getDriver().findElement(com.vaadin.testbench.By.xpath("//span[@class='v-button-caption' and text()='" + caption + "'"));
+        return $(ButtonElement.class).caption(caption).first();
     }
 
     public void unfocusEverything() {
