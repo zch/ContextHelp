@@ -36,7 +36,9 @@ public class ContextHelp extends AbstractExtension {
                 Placement placement = helpProvider.getPlacementForId(id);
                 getState().placement = placement == null ? Placement.AUTO : placement;
                 getState().hidden = false;
-            }
+            } else {
+				getState().hidden = true;
+			}
 		}
 
 		@Override
