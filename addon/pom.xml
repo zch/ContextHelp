@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.jonatan</groupId>
     <artifactId>contexthelp</artifactId>
-    <version>2.0.1</version>
+    <version>3.0.0</version>
     <name>ContextHelp</name>
     <packaging>jar</packaging>
 
@@ -24,7 +24,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version.maven>7.4.3</vaadin.version.maven>
+        <vaadin.version.maven>8.0.5</vaadin.version.maven>
         <snapshot.repository.url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/
         </snapshot.repository.url>
     </properties>
@@ -67,8 +67,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
 
@@ -198,9 +198,9 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.12.v20130726</version>
+                <version>9.4.3.v20170317</version>
                 <configuration>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <stopPort>9995</stopPort>
@@ -237,9 +237,6 @@
                         <style>PRETTY</style>
                         <module>org.vaadin.jonatan.contexthelp.widgetset.ContexthelpWidgetset</module>
 
-                        <!-- Skip in default phase, we only gwt compile for tests -->
-                        <!--<skip>true</skip> -->
-                        <!-- <attachDebugger>true</attachDebugger> -->
                         <strict>true</strict>
                     </configuration>
 
@@ -334,7 +331,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
-            <version>8.1.12.v20130726</version>
+            <version>9.4.3.v20170317</version>
             <scope>test</scope>
         </dependency>
         <dependency>

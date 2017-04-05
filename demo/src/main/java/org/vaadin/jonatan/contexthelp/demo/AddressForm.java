@@ -1,19 +1,13 @@
 package org.vaadin.jonatan.contexthelp.demo;
 
-import java.util.Arrays;
-
+import com.vaadin.data.Binder;
+import com.vaadin.ui.FormLayout;
 import org.vaadin.jonatan.contexthelp.ContextHelp;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.DefaultFieldFactory;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.Form;
 import com.vaadin.ui.TextField;
 
 @SuppressWarnings("serial")
-public class AddressForm extends Form {
+public class AddressForm extends FormLayout {
 
 	private static final String companyHelp = "Fill the <i>company</i> field with the name of your company if your address is for official company business.";
 	private static final String nameHelp = "Fill the <i>name</i> field with your name or the name of the contact person for your company.";
@@ -27,26 +21,6 @@ public class AddressForm extends Form {
 	private TextField postalCodeField = new TextField("Postal code");
 	private TextField countryField = new TextField("Country");
 
-	public class AddressFieldFactory extends DefaultFieldFactory {
-		private static final long serialVersionUID = -442936912458334994L;
-
-		public Field createField(Item item, Object propertyId,
-				Component uiContext) {
-			if ("company".equals(propertyId)) {
-				return companyField;
-			} else if ("name".equals(propertyId)) {
-				return nameField;
-			} else if ("street".equals(propertyId)) {
-				return streetField;
-			} else if ("postalCode".equals(propertyId)) {
-				return postalCodeField;
-			} else if ("country".equals(propertyId)) {
-				return countryField;
-			}
-			return super.createField(item, propertyId, uiContext);
-		}
-	}
-
 	public AddressForm() {
         // Set custom IDs to allow for easier TestBench testing
         companyField.setId("address.company");
@@ -55,11 +29,12 @@ public class AddressForm extends Form {
         postalCodeField.setId("address.postalCode");
         countryField.setId("address.country");
 
-		companyField.setNullRepresentation("");
-		nameField.setNullRepresentation("");
-		streetField.setNullRepresentation("");
-		postalCodeField.setNullRepresentation("");
-		countryField.setNullRepresentation("");
+		Binder<Address> binder = new Binder<>(Address.class);
+		binder.forField(companyField).withNullRepresentation("").bind("company");
+        binder.forField(nameField).withNullRepresentation("").bind("name");
+        binder.forField(streetField).withNullRepresentation("").bind("street");
+        binder.forField(postalCodeField).withNullRepresentation("").bind("postalCode");
+        binder.forField(countryField).withNullRepresentation("").bind("country");
 
 		ContextHelp contextHelp = ContextHelpDemoUI.getContextHelp();
 		contextHelp.addHelpForComponent(companyField, companyHelp);
@@ -69,9 +44,8 @@ public class AddressForm extends Form {
 		contextHelp.addHelpForComponent(countryField, countryHelp);
 
 		Address address = new Address();
-		BeanItem<Address> item = new BeanItem<Address>(address);
-		setFormFieldFactory(new AddressFieldFactory());
-		setItemDataSource(item, Arrays.asList("company", "name", "street",
-				"postalCode", "country"));
+        binder.readBean(address);
+
+        addComponents(companyField, nameField, streetField, postalCodeField, countryField);
 	}
 }

@@ -295,7 +295,7 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
         private Placement placement;
 
         public HelpBubble() {
-            super(false, false, false); // autoHide, modal, dropshadow
+            super(false, false); // autoHide, modal
             super.ac = connection;
             setStylePrimaryName(CLASSNAME + "-bubble");
             setZIndex(Z_INDEX_BASE);

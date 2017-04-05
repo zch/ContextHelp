@@ -1,7 +1,6 @@
 package org.vaadin.jonatan.contexthelp.demo;
 
 import com.vaadin.annotations.Theme;
-import com.vaadin.data.Property;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TabSheet;
@@ -24,18 +23,11 @@ public class ContextHelpDemoUI extends UI {
         setCurrent(this);
 
         CheckBox followFocus = new CheckBox("Make the help bubble follow focus");
-        followFocus.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                contextHelp.setFollowFocus((Boolean) event.getProperty().getValue());
-            }
-        });
-        followFocus.setImmediate(true);
+        followFocus.addValueChangeListener((event) -> contextHelp.setFollowFocus(event.getValue()));
         mainLayout.addComponent(followFocus);
 
         TabSheet tabs = new TabSheet();
         tabs.addTab(new AddressForm(), "Address form", null);
-        tabs.addTab(new WrappedFields(), "Wrapped fields", null);
         tabs.addTab(new GeneralHelp(), "General help", null);
         tabs.addTab(new PlacementDemo(), "Placement", null);
         tabs.addTab(new HelpKey(), "Configure the help key", null);
