@@ -1,3 +1,6 @@
+[![Published on Vaadin  Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/contexthelp)
+[![Stars on Vaadin Directory](https://img.shields.io/vaadin-directory/star/contexthelp.svg)](https://vaadin.com/directory/component/contexthelp)
+
 ContextHelp
 ===========
 ContextHelp is a component for Vaadin (http://vaadin.com) providing context sensitive help.
