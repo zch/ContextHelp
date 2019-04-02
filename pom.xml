@@ -5,7 +5,7 @@
     <groupId>org.vaadin.jonatan</groupId>
     <artifactId>contexthelp-modules</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
     <name>ContextHelp Modules</name>
 
     <developers>
