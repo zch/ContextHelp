@@ -403,7 +403,11 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
             switch (placement) {
                 case RIGHT:
                 case LEFT:
-                    return helpElement.getAbsoluteTop() + helpElement.getOffsetHeight() / 2 - bubble.getOffsetHeight() / 2;
+                  int top = helpElement.getAbsoluteTop() + helpElement.getOffsetHeight() / 2 - bubble.getOffsetHeight() / 2;
+                  if(top + bubble.getOffsetHeight() > Document.get().getClientHeight()) {
+                    top = Document.get().getClientHeight() - bubble.getOffsetHeight();
+                  }
+                  return top;
                 case ABOVE:
                     return helpElement.getAbsoluteTop() - bubble.getOffsetHeight();
                 case BELOW:
