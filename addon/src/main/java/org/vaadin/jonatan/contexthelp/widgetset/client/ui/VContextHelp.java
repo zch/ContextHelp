@@ -151,10 +151,14 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
     }
 
     private void openBubble() {
-        scrollUpdater.cancel();
-        scrollUpdater.scheduleRepeating(SCROLL_UPDATER_INTERVAL);
+        restartScrollUpdater();
         setHidden(false);
         fireBubbleMovedEvent(getHelpElement().getId());
+    }
+
+    private void restartScrollUpdater() {
+        scrollUpdater.cancel();
+        scrollUpdater.scheduleRepeating(SCROLL_UPDATER_INTERVAL);
     }
 
     private void closeBubble() {
@@ -165,6 +169,7 @@ public class VContextHelp implements NativePreviewHandler, HasHandlers {
 
     public void showHelpBubble(String componentId, String helpText, Placement placement) {
         bubble.showHelpBubble(componentId, helpText, placement);
+        restartScrollUpdater();
     }
 
     public void hideHelpBubble() {
