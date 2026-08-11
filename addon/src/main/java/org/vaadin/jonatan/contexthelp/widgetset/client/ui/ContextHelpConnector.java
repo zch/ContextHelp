@@ -1,5 +1,8 @@
 package org.vaadin.jonatan.contexthelp.widgetset.client.ui;
 
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.vaadin.client.ServerConnector;
@@ -29,6 +32,17 @@ public class ContextHelpConnector extends AbstractExtensionConnector implements 
             contextHelp.setFollowFocus(getState().followFocus);
             contextHelp.setHelpKeyCode(getState().helpKey);
             contextHelp.setHideOnBlur(getState().hideOnBlur);
+        }
+        if (getState().followFocus) {
+            serverConnector.getWidget().addKeyDownHandler(new KeyDownHandler() {
+                @Override
+                public void onKeyDown(KeyDownEvent event) {
+                    if (event.getKeyCode() == ShortcutAction.KeyCode.F1) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                }
+            });
         }
     }
 
